@@ -15,8 +15,7 @@ import {
   Lock, 
   Hospital,
   Phone,
-  MapPin,
-  Calendar
+  MapPin
 } from 'lucide-react';
 import {
   Select,
@@ -45,7 +44,8 @@ interface SignupFormData {
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuthStore();
+  const { isLoading } = useAuthStore();
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
   const { toast } = useToast();
   
   const [showPassword, setShowPassword] = useState(false);
@@ -69,22 +69,21 @@ const Signup: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name.includes('.')) {
-      const [parent, child] = name.split('.');
+    if (name.startsWith('address.')) {
+      const [, child] = name.split('.');
       setFormData(prev => ({
         ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev],
-          [child]: value
-        }
+        address: {
+          ...prev.address,
+          [child]: value,
+        },
       }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+      return;
     }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -132,36 +131,40 @@ const Signup: React.FC = () => {
     }
 
     try {
-      // For now, we'll simulate a successful registration
-      // In a real implementation, this would call your backend API
-      // Mock successful registration for demo purposes
-      console.log('Registration data:', {
-        hospital: {
-          name: formData.hospitalName,
-          license_number: formData.licenseNumber,
-          address: formData.address,
-          contact_email: formData.email,
-          contact_phone: formData.phone
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        user: {
-          name: formData.adminName,
-          email: formData.email,
-          password: formData.password,
-          role: formData.role
-        }
+        body: JSON.stringify({
+          hospital: {
+            name: formData.hospitalName,
+            license_number: formData.licenseNumber,
+            address: formData.address,
+            contact_email: formData.email,
+            contact_phone: formData.phone,
+          },
+          user: {
+            name: formData.adminName,
+            email: formData.email,
+            password: formData.password,
+            role: formData.role,
+          },
+        }),
       });
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Registration failed');
+      }
 
-      // Auto-login after successful registration
-      await login(formData.email, formData.password);
-      
+      await useAuthStore.getState().login(formData.email, formData.password);
+
       toast({
         title: 'Success!',
         description: 'Hospital registered successfully. Welcome to VienLink!',
       });
-      
+
       navigate('/dashboard');
     } catch (error) {
       toast({
@@ -182,7 +185,7 @@ const Signup: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">

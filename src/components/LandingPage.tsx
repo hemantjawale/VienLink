@@ -168,16 +168,16 @@ const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-red-50">
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md border-b border-gray-200 z-50">
+      <nav className="fixed top-0 w-full bg-background/90 backdrop-blur-md border-b border-border z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
                 <Heart className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">VienLink</span>
+              <span className="text-xl font-bold text-foreground">VienLink</span>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" onClick={() => navigate('/login')}>
@@ -210,14 +210,14 @@ const LandingPage: React.FC = () => {
                     <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
                       🩸 India's #1 Blood Bank Management System
                     </Badge>
-                    <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
+                    <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
                       Save Lives with{' '}
                       <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
                         Intelligent
                       </span>{' '}
                       Blood Management
                     </h1>
-                    <p className="text-xl text-gray-600 leading-relaxed">
+                    <p className="text-xl text-muted-foreground leading-relaxed">
                       VienLink revolutionizes blood bank management with real-time inventory tracking, 
                       3D visualization, and smart alerts. Designed specifically for Indian hospitals 
                       to save more lives efficiently.
@@ -246,8 +246,8 @@ const LandingPage: React.FC = () => {
                   <div className="flex items-center space-x-8 pt-4">
                     {stats.map((stat, index) => (
                       <div key={index} className="text-center">
-                        <div className="text-2xl md:text-3xl font-bold text-gray-900">{stat.number}</div>
-                        <div className="text-sm text-gray-600 flex items-center justify-center space-x-1">
+                        <div className="text-2xl md:text-3xl font-bold text-foreground">{stat.number}</div>
+                        <div className="text-sm text-muted-foreground flex items-center justify-center space-x-1">
                           <stat.icon className="w-4 h-4" />
                           <span>{stat.label}</span>
                         </div>
@@ -272,13 +272,13 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Blood Types Showcase */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Complete Blood Type Management
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Track and manage all 8 blood types with precision and real-time updates
             </p>
           </div>
@@ -291,13 +291,13 @@ const LandingPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="text-center hover:shadow-lg transition-shadow duration-300 border-2 hover:border-red-200">
+                <Card className="text-center hover:shadow-lg transition-shadow duration-300 border-2 border-border hover:border-red-200">
                   <CardContent className="pt-6">
                     <div className={`w-16 h-16 ${bloodType.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
                       <span className="text-white text-xl font-bold">{bloodType.type}</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{bloodType.type}</h3>
-                    <p className="text-sm text-gray-600">{bloodType.description}</p>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">{bloodType.type}</h3>
+                    <p className="text-sm text-muted-foreground">{bloodType.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -307,13 +307,13 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 bg-gradient-to-br from-gray-50 to-white">
+      <section id="features" className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Powerful Features for Modern Hospitals
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Everything you need to manage blood inventory efficiently and save more lives
             </p>
           </div>
@@ -326,7 +326,7 @@ const LandingPage: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between mb-4">
                       <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-lg flex items-center justify-center`}>
@@ -336,10 +336,10 @@ const LandingPage: React.FC = () => {
                         {feature.badge}
                       </Badge>
                     </div>
-                    <CardTitle className="text-xl text-gray-900">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl text-foreground">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-base text-gray-600">
+                    <CardDescription className="text-base text-muted-foreground">
                       {feature.description}
                     </CardDescription>
                   </CardContent>

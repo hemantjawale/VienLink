@@ -140,7 +140,7 @@ const Login: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
@@ -148,8 +148,8 @@ const Login: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">VienLink</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-2xl font-bold text-foreground">VienLink</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Blood Bank Management System
           </CardDescription>
         </CardHeader>
@@ -226,7 +226,7 @@ const Login: React.FC = () => {
             Continue with Google
           </Button>
 
-          <p className="text-center text-sm text-gray-600 mt-6">
+          <p className="text-center text-sm text-muted-foreground mt-6">
             By signing in, you agree to our{' '}
             <a href="#" className="text-red-600 hover:text-red-500">
               Terms of Service

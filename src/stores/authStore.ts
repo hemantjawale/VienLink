@@ -26,6 +26,7 @@ interface AuthState {
   logout: () => void;
   refreshToken: () => Promise<void>;
   setLoading: (loading: boolean) => void;
+  setMockAuth: (user: User) => void;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -144,6 +145,18 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           get().logout();
         }
+      },
+
+      setMockAuth: (user: User) => {
+        set({
+          user,
+          tokens: {
+            accessToken: 'demo-access-token',
+            refreshToken: 'demo-refresh-token',
+          },
+          isAuthenticated: true,
+          isLoading: false,
+        });
       },
     }),
     {

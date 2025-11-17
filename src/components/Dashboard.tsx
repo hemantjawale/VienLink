@@ -164,9 +164,9 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-red-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-background shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
@@ -176,18 +176,18 @@ const Dashboard: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">VienLink</h1>
+                <h1 className="text-2xl font-bold text-foreground">VienLink</h1>
               </div>
               <Separator orientation="vertical" className="h-6" />
               <div>
-                <p className="text-sm text-gray-600">{user.hospital.name}</p>
-                <p className="text-xs text-gray-500">License: {user.hospital.license_number}</p>
+                <p className="text-sm text-muted-foreground">{user.hospital.name}</p>
+                <p className="text-xs text-muted-foreground">License: {user.hospital.license_number}</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-500 capitalize">{user.role.replace('_', ' ')}</p>
+                <p className="text-sm font-medium text-foreground">{user.name}</p>
+                <p className="text-xs text-muted-foreground capitalize">{user.role.replace('_', ' ')}</p>
               </div>
               <Button variant="outline" onClick={handleLogout}>
                 Logout
@@ -257,7 +257,7 @@ const Dashboard: React.FC = () => {
 
         {/* Critical Alerts */}
         {criticalBloodTypes.length > 0 && (
-          <Card className="mb-8 border-red-200 bg-red-50">
+          <Card className="mb-8 border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800">
             <CardHeader>
               <CardTitle className="text-red-800 flex items-center">
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,9 +269,9 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {criticalBloodTypes.map((item) => (
-                  <div key={item.blood_type} className="text-center p-3 bg-white rounded-lg border border-red-200">
+                  <div key={item.blood_type} className="text-center p-3 bg-card rounded-lg border border-red-200 dark:border-red-800">
                     <div className="text-lg font-bold text-red-600">{item.blood_type}</div>
-                    <div className="text-sm text-gray-600">{item.quantity_ml}ml</div>
+                    <div className="text-sm text-muted-foreground">{item.quantity_ml}ml</div>
                     <Badge variant="destructive" className="mt-1">Critical</Badge>
                   </div>
                 ))}
