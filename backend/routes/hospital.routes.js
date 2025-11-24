@@ -5,6 +5,8 @@ import User from '../models/User.model.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { logAction } from '../utils/auditLogger.js';
 import { generateToken } from '../utils/generateToken.js';
+import { uploadCertificate } from '../middleware/upload.middleware.js';
+import { uploadOnCloudinary, deleteOnCloudinary } from '../utils/cloudinary.js';
 
 const router = express.Router();
 
@@ -13,6 +15,7 @@ const router = express.Router();
 // @access  Public
 router.post(
   '/register',
+  uploadCertificate,
   [
     body('hospitalName').trim().notEmpty(),
     body('email').isEmail().normalizeEmail(),
@@ -60,6 +63,25 @@ router.post(
         });
       }
 
+      // Handle certificate upload if file is provided
+      let certificateData = null;
+      if (req.file) {
+        const cloudinaryResponse = await uploadOnCloudinary(req.file.path, req.file.mimetype);
+        if (!cloudinaryResponse) {
+          return res.status(500).json({
+            success: false,
+            message: 'Failed to upload certificate to cloud storage',
+          });
+        }
+        certificateData = {
+          public_id: cloudinaryResponse.public_id,
+          url: cloudinaryResponse.secure_url,
+          originalName: req.file.originalname,
+          mimeType: req.file.mimetype,
+          size: req.file.size,
+        };
+      }
+
       // Create hospital
       const hospital = await Hospital.create({
         name: hospitalName,
@@ -67,6 +89,7 @@ router.post(
         phone,
         address,
         licenseNumber,
+        certificate: certificateData,
         isApproved: false, // Requires super admin approval
       });
 
@@ -99,9 +122,37 @@ router.post(
           id: hospital._id,
           name: hospital.name,
           isApproved: hospital.isApproved,
+          certificate: hospital.certificate,
         },
       });
     } catch (error) {
+      // Handle multer errors specifically
+      if (error.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          success: false,
+          message: 'File size too large. Maximum size is 5MB.',
+        });
+      }
+      if (error.code === 'LIMIT_FILE_COUNT') {
+        return res.status(400).json({
+          success: false,
+          message: 'Too many files uploaded.',
+        });
+      }
+      if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+        return res.status(400).json({
+          success: false,
+          message: 'Unexpected file field.',
+        });
+      }
+      if (error.message.includes('Invalid file type')) {
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
+      
+      console.error('Registration error:', error);
       next(error);
     }
   }
@@ -285,6 +336,87 @@ router.put('/:id', authorize('super_admin', 'hospital_admin'), async (req, res, 
     next(error);
   }
 });
+
+// @route   PUT /api/hospitals/:id/certificate
+// @desc    Update hospital certificate
+// @access  Private (Hospital Admin, Super Admin)
+router.put('/:id/certificate', 
+  authorize('super_admin', 'hospital_admin'), 
+  uploadCertificate, 
+  async (req, res, next) => {
+    try {
+      const filter = { _id: req.params.id };
+
+      // Hospital admins can only update their own hospital
+      if (req.user.role === 'hospital_admin') {
+        if (req.params.id !== req.user.hospitalId.toString()) {
+          return res.status(403).json({
+            success: false,
+            message: 'Not authorized to update this hospital',
+          });
+        }
+      }
+
+      const hospital = await Hospital.findOne(filter);
+
+      if (!hospital) {
+        return res.status(404).json({
+          success: false,
+          message: 'Hospital not found',
+        });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'No certificate file provided',
+        });
+      }
+
+      // Delete old certificate if exists
+      if (hospital.certificate && hospital.certificate.public_id) {
+        const oldMime = hospital.certificate.mimeType;
+        const deleteResourceType = oldMime && oldMime.startsWith('image/')
+          ? 'image'
+          : (oldMime === 'application/pdf' || oldMime === 'application/msword' || oldMime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            ? 'raw'
+            : 'image';
+        await deleteOnCloudinary(hospital.certificate.public_id, deleteResourceType);
+      }
+
+      // Upload new certificate
+      const cloudinaryResponse = await uploadOnCloudinary(req.file.path, req.file.mimetype);
+      if (!cloudinaryResponse) {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to upload certificate to cloud storage',
+        });
+      }
+
+      const certificateData = {
+        public_id: cloudinaryResponse.public_id,
+        url: cloudinaryResponse.secure_url,
+        originalName: req.file.originalname,
+        mimeType: req.file.mimetype,
+        size: req.file.size,
+      };
+
+      hospital.certificate = certificateData;
+      await hospital.save();
+
+      await logAction('HOSPITAL_CERTIFICATE_UPDATED', 'Hospital', hospital._id, req.user._id, hospital._id, {
+        new: certificateData,
+      }, req);
+
+      res.json({
+        success: true,
+        data: hospital,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 // @route   DELETE /api/hospitals/:id
 // @desc    Delete hospital

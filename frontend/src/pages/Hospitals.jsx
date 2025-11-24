@@ -192,6 +192,24 @@ export const Hospitals = () => {
                   </p>
                 )}
                 {hospital.licenseNumber && <p>License: {hospital.licenseNumber}</p>}
+                {hospital.certificate && (
+                  <div>
+                    <p className="font-medium text-gray-700 dark:text-gray-300 mb-1">Certificate:</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                        {hospital.certificate.originalName}
+                      </span>
+                      <a
+                        href={hospital.certificate.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 hover:text-primary-700 text-xs font-medium underline"
+                      >
+                        View Document
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {!hospital.isApproved && (

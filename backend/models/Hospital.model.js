@@ -42,6 +42,13 @@ const hospitalSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
+    certificate: {
+      public_id: String,
+      url: String,
+      originalName: String,
+      mimeType: String,
+      size: Number,
+    },
     isApproved: {
       type: Boolean,
       default: false,

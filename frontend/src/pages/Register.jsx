@@ -27,6 +27,8 @@ export const Register = () => {
     licenseNumber: '',
   });
 
+  const [certificateFile, setCertificateFile] = useState(null);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -45,15 +47,32 @@ export const Register = () => {
     setLoading(true);
 
     try {
-      const response = await api.post('/hospitals/register', {
-        hospitalName: formData.hospitalName,
-        email: formData.email,
-        password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        address: formData.address,
-        licenseNumber: formData.licenseNumber,
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('hospitalName', formData.hospitalName);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('firstName', formData.firstName);
+      formDataToSend.append('lastName', formData.lastName);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('licenseNumber', formData.licenseNumber);
+      
+      // Add address fields
+      if (formData.address.street) formDataToSend.append('address.street', formData.address.street);
+      if (formData.address.city) formDataToSend.append('address.city', formData.address.city);
+      if (formData.address.state) formDataToSend.append('address.state', formData.address.state);
+      if (formData.address.zipCode) formDataToSend.append('address.zipCode', formData.address.zipCode);
+      if (formData.address.country) formDataToSend.append('address.country', formData.address.country);
+      
+      // Add certificate file if selected
+      if (certificateFile) {
+        formDataToSend.append('certificate', certificateFile);
+      }
+
+      const response = await api.post('/hospitals/register', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (response.data.success) {
@@ -107,6 +126,33 @@ export const Register = () => {
                   onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
                   placeholder="Enter license number"
                 />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Hospital Certificate (Optional)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      onChange={(e) => setCertificateFile(e.target.files[0])}
+                      className="block w-full text-sm text-gray-500 dark:text-gray-400
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-primary-50 file:text-primary-700
+                        hover:file:bg-primary-100
+                        cursor-pointer"
+                    />
+                  </div>
+                  {certificateFile && (
+                    <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                      Selected: {certificateFile.name}
+                    </div>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Upload hospital certificate or registration document (PDF, DOC, DOCX, JPG, PNG - Max 5MB)
+                  </p>
+                </div>
               </div>
 
               {/* Admin Information */}

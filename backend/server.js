@@ -30,6 +30,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static(join(__dirname, 'uploads')));
+
 // Check required environment variables
 if (!process.env.MONGODB_URI) {
   console.error('❌ Error: MONGODB_URI is not defined in .env file');

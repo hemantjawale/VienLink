@@ -26,7 +26,8 @@
     "twilio": "^4.19.0",
     "multer": "^1.4.5-lts.1",
     "openai": "^4.20.1",
-    "@google/genai": "^0.3.0"
+    "@google/genai": "^0.3.0",
+    "cloudinary": "^1.41.0"
   }
 }
 
