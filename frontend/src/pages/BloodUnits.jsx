@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -18,6 +19,7 @@ export const BloodUnits = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [bloodGroupFilter, setBloodGroupFilter] = useState('');
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     donorId: '',
@@ -101,15 +103,26 @@ export const BloodUnits = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-red-600 dark:text-red-500">Blood Inventory</h1>
-          <p className="text-gray-600 mt-1">Manage blood units and track QR codes</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Blood Inventory</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">Manage and track blood units in your hospital</p>
         </div>
-        <Button onClick={() => setShowModal(true)}>
-          <Plus size={20} />
-          Add Blood Unit
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => setShowModal(true)}>
+            <Plus size={20} />
+            Add Blood Unit
+          </Button>
+          <Button
+            onClick={() =>
+              navigate('/inter-hospital-requests', {
+                state: { preselectedBloodGroup: bloodGroupFilter },
+              })
+            }
+          >
+            Request from another hospital
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}

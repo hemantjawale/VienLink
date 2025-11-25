@@ -11,6 +11,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Donors } from './pages/Donors';
 import { BloodUnits } from './pages/BloodUnits';
 import { BloodRequests } from './pages/BloodRequests';
+import { InterHospitalRequests } from './pages/InterHospitalRequests';
 import { BloodCamps } from './pages/BloodCamps';
 import { Staff } from './pages/Staff';
 import { Hospitals } from './pages/Hospitals';
@@ -84,6 +85,16 @@ function AppRoutes() {
           <PrivateRoute>
             <MainLayout>
               <BloodRequests />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/inter-hospital-requests"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <InterHospitalRequests />
             </MainLayout>
           </PrivateRoute>
         }

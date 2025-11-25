@@ -12,6 +12,7 @@ import {
   LogOut,
   Menu,
   X,
+  ArrowRightLeft,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
@@ -27,6 +28,7 @@ const menuItems = {
     { path: '/donors', label: 'Donors', icon: Users },
     { path: '/blood-units', label: 'Blood Inventory', icon: Droplet },
     { path: '/blood-requests', label: 'Blood Requests', icon: FileText },
+    { path: '/inter-hospital-requests', label: 'Inter-Hospital Requests', icon: ArrowRightLeft },
     { path: '/blood-camps', label: 'Blood Camps', icon: Calendar },
     { path: '/staff', label: 'Staff', icon: UserCog },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
@@ -36,6 +38,7 @@ const menuItems = {
     { path: '/donors', label: 'Donors', icon: Users },
     { path: '/blood-units', label: 'Blood Inventory', icon: Droplet },
     { path: '/blood-requests', label: 'Blood Requests', icon: FileText },
+    { path: '/inter-hospital-requests', label: 'Inter-Hospital Requests', icon: ArrowRightLeft },
     { path: '/blood-camps', label: 'Blood Camps', icon: Calendar },
   ],
 };

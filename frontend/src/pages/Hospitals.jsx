@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 export const Hospitals = () => {
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // 'all', 'pending', 'approved'
+  const [filter, setFilter] = useState('all'); // 'all', 'pending', 'approved', 'rejected'
 
   useEffect(() => {
     fetchHospitals();
@@ -20,9 +20,11 @@ export const Hospitals = () => {
     try {
       const params = {};
       if (filter === 'pending') {
-        params.isApproved = 'false';
+        params.status = 'pending';
       } else if (filter === 'approved') {
-        params.isApproved = 'true';
+        params.status = 'approved';
+      } else if (filter === 'rejected') {
+        params.status = 'rejected';
       }
       const response = await api.get('/hospitals', { params });
       setHospitals(response.data.data);
@@ -63,12 +65,14 @@ export const Hospitals = () => {
     );
   }
 
-  const pendingCount = hospitals.filter((h) => !h.isApproved).length;
-  const approvedCount = hospitals.filter((h) => h.isApproved).length;
+  const pendingCount = hospitals.filter((h) => h.status === 'pending').length;
+  const approvedCount = hospitals.filter((h) => h.status === 'approved').length;
+  const rejectedCount = hospitals.filter((h) => h.status === 'rejected').length;
 
   const filteredHospitals = hospitals.filter((hospital) => {
-    if (filter === 'pending') return !hospital.isApproved;
-    if (filter === 'approved') return hospital.isApproved;
+    if (filter === 'pending') return hospital.status === 'pending';
+    if (filter === 'approved') return hospital.status === 'approved';
+    if (filter === 'rejected') return hospital.status === 'rejected';
     return true;
   });
 
@@ -90,7 +94,7 @@ export const Hospitals = () => {
       </div>
 
       {/* Filter and Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -126,6 +130,17 @@ export const Hospitals = () => {
         </Card>
         <Card>
           <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Rejected</p>
+                <p className="text-2xl font-bold text-red-600">{rejectedCount}</p>
+              </div>
+              <XCircle className="text-red-600" size={24} />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
             <Select
               label="Filter"
               value={filter}
@@ -134,6 +149,7 @@ export const Hospitals = () => {
                 { value: 'all', label: 'All Hospitals' },
                 { value: 'pending', label: 'Pending Only' },
                 { value: 'approved', label: 'Approved Only' },
+                { value: 'rejected', label: 'Rejected Only' },
               ]}
             />
           </CardContent>
@@ -175,12 +191,14 @@ export const Hospitals = () => {
                 </div>
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0 ${
-                    hospital.isApproved
+                    hospital.status === 'approved'
                       ? 'bg-secondary-100 text-secondary-800'
+                      : hospital.status === 'rejected'
+                      ? 'bg-red-100 text-red-800'
                       : 'bg-orange-100 text-orange-800'
                   }`}
                 >
-                  {hospital.isApproved ? 'Approved' : 'Pending'}
+                  {hospital.status === 'approved' ? 'Approved' : hospital.status === 'rejected' ? 'Rejected' : 'Pending'}
                 </span>
               </div>
 
@@ -212,23 +230,34 @@ export const Hospitals = () => {
                 )}
               </div>
 
-              {!hospital.isApproved && (
+              {hospital.status === 'pending' && (
                 <div className="space-y-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="w-full"
-                    onClick={() => handleApprove(hospital._id)}
-                  >
-                    <CheckCircle size={16} />
-                    Approve Hospital
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="flex-1"
+                      onClick={() => handleApprove(hospital._id)}
+                    >
+                      <CheckCircle size={16} />
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      className="flex-1"
+                      onClick={() => handleReject(hospital._id)}
+                    >
+                      <XCircle size={16} />
+                      Reject
+                    </Button>
+                  </div>
                   <p className="text-xs text-gray-500 text-center">
                     Registered: {format(new Date(hospital.createdAt), 'MMM dd, yyyy')}
                   </p>
                 </div>
               )}
-              {hospital.isApproved && (
+              {hospital.status === 'approved' && (
                 <div className="pt-2 border-t space-y-2">
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -254,6 +283,37 @@ export const Hospitals = () => {
                   </Button>
                 </div>
               )}
+              {hospital.status === 'rejected' && (
+                <div className="pt-2 border-t space-y-2">
+                  <div>
+                    <p className="text-xs text-red-500 dark:text-red-400 font-medium">
+                      Rejected:{' '}
+                      {hospital.rejectedAt
+                        ? format(new Date(hospital.rejectedAt), 'MMM dd, yyyy')
+                        : 'N/A'}
+                    </p>
+                    {hospital.rejectedBy && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        By: {hospital.rejectedBy.firstName} {hospital.rejectedBy.lastName}
+                      </p>
+                    )}
+                    {hospital.rejectionReason && (
+                      <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                        Reason: {hospital.rejectionReason}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => handleApprove(hospital._id)}
+                  >
+                    <CheckCircle size={16} />
+                    Approve Hospital
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
@@ -268,6 +328,8 @@ export const Hospitals = () => {
                 ? 'No pending hospitals'
                 : filter === 'approved'
                 ? 'No approved hospitals'
+                : filter === 'rejected'
+                ? 'No rejected hospitals'
                 : 'No hospitals found'}
             </p>
             {filter !== 'all' && (

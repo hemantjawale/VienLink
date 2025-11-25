@@ -3,9 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
-import { Droplet } from 'lucide-react';
+import { CardHeader, CardTitle, CardContent } from '../components/ui/Card';
+import { Droplet, Moon, Sun } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTheme } from '../context/ThemeContext';
+import Spline from '@splinetool/react-spline';
 
 export const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -30,6 +32,7 @@ export const Register = () => {
   const [certificateFile, setCertificateFile] = useState(null);
 
   const navigate = useNavigate();
+  const { darkMode, toggleDarkMode } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,27 +95,53 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 dark:from-gray-900 via-white dark:via-gray-900 to-secondary-50 dark:to-gray-800 p-4 py-12 transition-colors">
-      <div className="w-full max-w-2xl">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-600 mb-4">
-            <Droplet className="text-white" size={32} />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Register Your Hospital</h1>
-          <p className="text-gray-600">Join Vien Link to manage your blood bank efficiently</p>
-        </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* 3D Model Background */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <Spline scene="https://prod.spline.design/H3KNk3yz8XLS22If/scene.splinecode" />
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Hospital Registration</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Hospital Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                  Hospital Information
-                </h3>
+      {/* Overlay Gradient (subtle to keep spline visible) */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/5 to-transparent z-10"></div>
+
+      {/* Dark Mode Toggle */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDarkMode();
+          }}
+          className="p-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg hover:bg-white/20 transition-colors"
+          title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          type="button"
+        >
+          {darkMode ? <Sun className="text-yellow-400" size={20} /> : <Moon className="text-white" size={20} />}
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-20 min-h-screen flex items-center justify-center p-4 py-12">
+        <div className="w-full max-w-2xl">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-600/80 mb-4 shadow-lg backdrop-blur-sm">
+              <Droplet className="text-white" size={32} />
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-2">Register Your Hospital</h1>
+            <p className="text-gray-200">Join Vien Link to manage your blood bank efficiently</p>
+          </div>
+
+          <div className="rounded-xl bg-transparent backdrop-blur-xl border border-white/10 shadow-xl p-6">
+            <CardHeader>
+              <CardTitle className="text-white/85">Hospital Registration</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Hospital Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-white/20 pb-2">
+                    Hospital Information
+                  </h3>
                 <Input
                   label="Hospital Name"
                   value={formData.hospitalName}
@@ -155,11 +184,11 @@ export const Register = () => {
                 </div>
               </div>
 
-              {/* Admin Information */}
-              <div className="space-y-4 pt-4 border-t">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                  Administrator Information
-                </h3>
+                {/* Admin Information */}
+                <div className="space-y-4 pt-4 border-t border-white/20">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-white/20 pb-2">
+                    Administrator Information
+                  </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     label="First Name"
@@ -191,11 +220,11 @@ export const Register = () => {
                 />
               </div>
 
-              {/* Password */}
-              <div className="space-y-4 pt-4 border-t">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                  Account Security
-                </h3>
+                {/* Password */}
+                <div className="space-y-4 pt-4 border-t border-white/20">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-white/20 pb-2">
+                    Account Security
+                  </h3>
                 <Input
                   label="Password"
                   type="password"
@@ -215,11 +244,11 @@ export const Register = () => {
                 />
               </div>
 
-              {/* Address */}
-              <div className="space-y-4 pt-4 border-t">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-                  Hospital Address (Optional)
-                </h3>
+                {/* Address */}
+                <div className="space-y-4 pt-4 border-t border-white/20">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-white/20 pb-2">
+                    Hospital Address (Optional)
+                  </h3>
                 <Input
                   label="Street Address"
                   value={formData.address.street}
@@ -274,33 +303,34 @@ export const Register = () => {
                 />
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-                <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> Your hospital registration will be reviewed by our team.
-                  You'll be notified once your account is approved.
-                </p>
-              </div>
+                <div className="bg-blue-50/90 dark:bg-blue-900/40 border border-blue-200/80 dark:border-blue-500/60 rounded-lg p-4 mt-6">
+                  <p className="text-sm text-blue-800 dark:text-blue-100">
+                    <strong>Note:</strong> Your hospital registration will be reviewed by our team.
+                    You'll be notified once your account is approved.
+                  </p>
+                </div>
 
-              <div className="flex justify-end gap-3 pt-4">
-                <Link to="/">
-                  <Button type="button" variant="outline">
-                    Cancel
+                <div className="flex justify-end gap-3 pt-4">
+                  <Link to="/">
+                    <Button type="button" variant="outline">
+                      Cancel
+                    </Button>
+                  </Link>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Registering...' : 'Register Hospital'}
                   </Button>
-                </Link>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Registering...' : 'Register Hospital'}
-                </Button>
-              </div>
+                </div>
 
-              <div className="text-center text-sm text-gray-600 pt-4 border-t">
-                Already have an account?{' '}
-                <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
-                  Sign in
-                </Link>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+                <div className="text-center text-sm text-gray-300/80 pt-4 border-t border-white/10">
+                  Already have an account?{' '}
+                  <Link to="/login" className="text-primary-300/80 hover:text-primary-200/90 font-medium">
+                    Sign in
+                  </Link>
+                </div>
+              </form>
+            </CardContent>
+          </div>
+        </div>
       </div>
     </div>
   );

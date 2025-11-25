@@ -32,6 +32,31 @@ router.post(
           success: false,
           errors: errors.array(),
         });
+
+// @route   GET /api/hospitals/approved-list
+// @desc    Get list of approved hospitals for inter-hospital requests
+// @access  Private (Hospital Admin, Staff, Super Admin)
+router.get('/approved-list', authorize('super_admin', 'hospital_admin', 'staff'), async (req, res, next) => {
+  try {
+    const filter = { isApproved: true };
+
+    // Normal hospitals should not see themselves as targets
+    const hospitals = await Hospital.find(filter)
+      .select('name email status')
+      .sort({ name: 1 });
+
+    const filtered = req.user.hospitalId
+      ? hospitals.filter((h) => h._id.toString() !== req.user.hospitalId.toString())
+      : hospitals;
+
+    res.json({
+      success: true,
+      data: filtered,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
       }
 
       const {
@@ -160,6 +185,30 @@ router.post(
 
 router.use(protect);
 
+// @route   GET /api/hospitals/approved-list
+// @desc    Get list of approved hospitals for inter-hospital requests
+// @access  Private (Hospital Admin, Staff, Super Admin)
+router.get('/approved-list', authorize('super_admin', 'hospital_admin', 'staff'), async (req, res, next) => {
+  try {
+    const filter = { isApproved: true };
+
+    const hospitals = await Hospital.find(filter)
+      .select('name email status')
+      .sort({ name: 1 });
+
+    const filtered = req.user.hospitalId
+      ? hospitals.filter((h) => h._id.toString() !== req.user.hospitalId.toString())
+      : hospitals;
+
+    res.json({
+      success: true,
+      data: filtered,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // @route   GET /api/hospitals
 // @desc    Get all hospitals
 // @access  Private (Super Admin)
@@ -171,8 +220,13 @@ router.get('/', authorize('super_admin'), async (req, res, next) => {
       filter.isApproved = req.query.isApproved === 'true';
     }
 
+    if (req.query.status !== undefined) {
+      filter.status = req.query.status;
+    }
+
     const hospitals = await Hospital.find(filter)
       .populate('approvedBy', 'firstName lastName')
+      .populate('rejectedBy', 'firstName lastName')
       .sort({ createdAt: -1 })
       .limit(parseInt(req.query.limit) || 50)
       .skip(parseInt(req.query.skip) || 0);
@@ -191,7 +245,7 @@ router.get('/', authorize('super_admin'), async (req, res, next) => {
 });
 
 // @route   PUT /api/hospitals/:id/reject
-// @desc    Reject or unapprove hospital
+// @desc    Reject hospital
 // @access  Private (Super Admin)
 router.put('/:id/reject', authorize('super_admin'), async (req, res, next) => {
   try {
@@ -204,16 +258,23 @@ router.put('/:id/reject', authorize('super_admin'), async (req, res, next) => {
       });
     }
 
-    // Mark as not approved and clear approver info
+    // Mark as rejected
     hospital.isApproved = false;
+    hospital.status = 'rejected';
+    hospital.rejectedBy = req.user._id;
+    hospital.rejectedAt = new Date();
+    hospital.rejectionReason = req.body.rejectionReason || 'Rejected by administrator';
     hospital.approvedBy = null;
     hospital.approvedAt = null;
     await hospital.save();
 
-    await logAction('HOSPITAL_REJECTED', 'Hospital', hospital._id, req.user._id, null, {}, req);
+    await logAction('HOSPITAL_REJECTED', 'Hospital', hospital._id, req.user._id, null, {
+      rejectionReason: hospital.rejectionReason
+    }, req);
 
     res.json({
       success: true,
+      message: 'Hospital rejected successfully',
       data: hospital,
     });
   } catch (error) {
@@ -279,14 +340,19 @@ router.put('/:id/approve', authorize('super_admin'), async (req, res, next) => {
     }
 
     hospital.isApproved = true;
+    hospital.status = 'approved';
     hospital.approvedBy = req.user._id;
     hospital.approvedAt = new Date();
+    hospital.rejectedBy = null;
+    hospital.rejectedAt = null;
+    hospital.rejectionReason = null;
     await hospital.save();
 
     await logAction('HOSPITAL_APPROVED', 'Hospital', hospital._id, req.user._id, null, {}, req);
 
     res.json({
       success: true,
+      message: 'Hospital approved successfully',
       data: hospital,
     });
   } catch (error) {
