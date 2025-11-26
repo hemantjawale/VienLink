@@ -1,568 +1,155 @@
-Understood.
-Below is **ONE COMPLETE, CLEAN, PROFESSIONAL README.md** — all in **one continuous markdown block**, properly formatted, no breaks, no missing parts.
-You can **copy & paste directly into your README.md**.
+
+# 🏥 VienLink - Blood Bank Management System
+
+![Status](https://img.shields.io/badge/Status-Active-success)
+![Issues](https://img.shields.io/github/issues/hemantjawale/VienLink)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+> **A comprehensive, full-stack solution bridging the gap between hospitals, blood banks, and donors.**
+
+VienLink is a robust Blood Bank Management System designed to digitize and streamline the entire process of blood donation, inventory management, and inter-hospital collaboration. With over **80+ features**, it handles everything from real-time inventory tracking and AI-powered analytics to emergency blood requests and public donor portals.
 
 ---
 
+## 🔗 Live Demo & Repository
 
-# 🏥 VienLink Blood Bank Management System
-
-A full-stack, enterprise-grade **Blood Bank Management System** designed for hospitals, donors, and the general public.  
-VienLink provides **80+ production-level features** including blood inventory management, donation scheduling, AI-powered analytics, inter-hospital transfers, and secure multi-role authentication.
-
----
-
-## 🌐 Deployed Links
-🔗 **Live Frontend:** _Add your frontend deployed link here_  
-🔗 **Backend API:** _Add your backend deployed link here_  
-🔗 **Admin Panel:** _Add admin link (optional)_  
+- **🚀 Live Deployment:** [https://vienlink-1.onrender.com](https://vienlink-1.onrender.com)
+- **📂 GitHub Repository:** [github.com/hemantjawale/VienLink](https://github.com/hemantjawale/VienLink)
 
 ---
 
-## 📸 Project Preview  
-_Add screenshots or GIF demos here_
+## 🌟 Key Features
+
+### 🔐 Authentication & User Roles
+* **Multi-Role System:** Secure access for Super Admins, Hospital Admins, Staff, and Public Users.
+* **Security:** JWT Token-based authentication with refresh tokens.
+* **Hospital Verification:** Approval workflow for new hospital registrations.
+
+### 🩸 Inventory & Donation Management
+* **Real-time Tracking:** Live monitor of blood units (A+, B-, O+, etc.) with expiration tracking.
+* **Donation Workflow:** Slot booking, history tracking, eligibility checks, and reward systems.
+* **Low Stock Alerts:** Automated notifications when inventory hits critical levels.
+
+### 📋 Request System & Collaboration
+* **Blood Requests:** Internal (Hospital) and Public (Individual) request creation with status tracking.
+* **Inter-Hospital Transfer:** Secure workflow for hospitals to share blood units during shortages.
+* **Emergency Handling:** Prioritization algorithms for emergency blood requests.
+
+### 📅 Blood Camps
+* **Camp Management:** Scheduling, location mapping, and donor registration for blood drives.
+* **Public Access:** Directory for donors to find and register for nearby camps.
+
+### 📊 Analytics & AI
+* **Dashboard:** Real-time statistics on donations, inventory, and hospital performance.
+* **AI Chatbot:** 24/7 assistant for user queries, appointment booking, and FAQs.
+* **Predictive Analytics:** Smart algorithms for stock prediction and demand forecasting.
+
+### 🎨 UI/UX & Accessibility
+* **Modern Interface:** Responsive, mobile-first design with Dark/Light mode toggle.
+* **Accessibility:** Screen reader compatibility, high contrast modes, and keyboard navigation.
 
 ---
 
-# 📌 Table of Contents
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [System Architecture](#-system-architecture)
-- [Installation & Setup](#%EF%B8%8F-installation--setup)
-- [Project Structure](#-project-structure)
-- [Running Tests](#-running-tests)
-- [API Base URL](#-api-base-url)
-- [API Documentation](#%EF%B8%8F-api-documentation)
-- [Response Formats](#-response-formats)
-- [Deployment Instructions](#-deployment-instructions)
-- [Contributing](#-contributing)
-- [License](#-license)
+## 🚀 Upcoming Features (Roadmap)
+
+We are constantly improving VienLink. The following features are currently in development:
+
+- [ ] **Google OAuth Integration:** One-click login for public users and staff.
+- [ ] **Email Verification:** Secure "Forgot Password" flow via email OTP/Links.
 
 ---
 
-# ⭐ Features
+## 🛠️ Tech Stack
 
-## 🔐 Authentication & User Management
-- Multi-role authentication (Super Admin, Hospital Admin, Staff)
-- JWT authentication (access + refresh)
-- Hospital onboarding & approval flow
-- User profile + password update with in-app verification
-- Public donor/recipient account system
-- Forgot-password via code verification
-- Medical history management
-
-## 🩸 Blood Inventory Management
-- Real-time inventory by blood group
-- Blood unit expiry tracking
-- QC statuses (Tested, Safe, Rejected)
-- Low stock alerts
-- Inventory analytics dashboard
-
-## ❤️ Donation System
-- Donor registration & profile
-- Donation slot booking
-- Eligibility validation
-- Donation history
-- Donor reward system
-
-## 📋 Blood Request System
-- Hospital blood requests
-- Public blood request workflow
-- Status tracking (Pending, Approved, Rejected, Fulfilled)
-- Blood matching algorithm
-- Emergency request prioritization
-
-## 🤝 Inter-Hospital Collaboration
-- Blood transfer request system
-- Approval workflow
-- Dispatch & logistics tracking
-- Transfer history reporting
-
-## 📅 Blood Camp Management
-- Organize and promote blood donation camps
-- Public camp directory
-- Donor registrations
-- Camp reminders
-- Camp performance analytics
-
-## 📊 Analytics & AI
-- Donation trends & KPIs
-- Blood demand forecasting
-- Donor matching optimization
-- Real-time dashboards
-- Expiry prediction analytics
-
-## 🎨 UI/UX Features
-- Fully responsive UI
-- Light/Dark theme toggle
-- Mobile-first design
-- Accessible components (WCAG)
-- High contrast mode
-
-## � Real-Time Notifications System
-- **Socket.IO powered** real-time notifications
-- **Blood request status updates** (approved, rejected, fulfilled)
-- **Low stock alerts** with automatic monitoring
-- **Emergency broadcasts** across all hospitals
-- **Inter-hospital transfer notifications**
-- **Blood camp updates** and reminders
-- **Browser notifications** support
-- **Notification preferences** and settings
-- **Connection status indicators**
-- **Priority-based filtering** (high, medium, low)
-- **In-app notification center** with history
-- **Sound notifications** with mute options
-- **Role-based notification routing**
-
-## � Security & Infrastructure
-- RBAC authorization
-- Rate limiting
-- Encrypted passwords
-- Sanitized inputs
-- Action audit logs
-- Secure cloud file storage
+* **Database:** MongoDB (Optimized schemas, Aggregation pipelines)
+* **Backend:** Node.js / Express.js (RESTful API)
+* **Frontend:** React.js (Modern UI Components, Responsive Design)
+* **Authentication:** JSON Web Tokens (JWT), BCrypt
+* **Hosting:** Render
 
 ---
 
-# 🧩 Tech Stack
+## ⚙️ Installation & Setup
 
-## Frontend
-- React.js / Next.js
-- Redux / Context API
-- TailwindCSS / Material UI
-- Axios
+Follow these steps to set up the project locally.
 
-## Backend
-- Node.js (Express.js)
-- MongoDB (Mongoose)
-- JWT Authentication
-- Nodemailer
-- Cloudinary / AWS S3
+### Prerequisites
+* Node.js (v14 or higher)
+* MongoDB (Local or Atlas URI)
+* Git
 
-## DevOps
-- GitHub
-- Render / Railway / AWS
-- Vercel / Netlify
-- Docker (optional)
-
----
-
-# 🏛 System Architecture
-
-```
-
-┌───────────────────────────┐
-│        Frontend UI        │
-│  (React / Next + Axios)   │
-└───────────────┬───────────┘
-│
-REST API Calls
-│
-┌───────────────▼──────────────┐
-│       Backend Server          │
-│ (Node.js + Express + JWT)     │
-└───────────────┬──────────────┘
-│
-Database Operations
-│
-┌───────────────▼──────────────┐
-│          MongoDB              │
-│ (Inventory, Users, Requests)  │
-└──────────────────────────────┘
-
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/hemantjawale/VienLink.git](https://github.com/hemantjawale/VienLink.git)
+cd VienLink
 ````
 
----
+### 2\. Install Dependencies
 
-# ⚙️ Installation & Setup
+You likely have a server and client folder structure.
 
-## 1️⃣ Clone the Repository
-```sh
-git clone https://github.com/yourusername/VienLink-BloodBank.git
-cd VienLink-BloodBank
-````
+**Server Setup:**
 
----
-
-# 🛠 Backend Setup
-
-### Navigate to backend folder
-
-```sh
-cd backend
-```
-
-### Install dependencies
-
-```sh
+```bash
+cd server
 npm install
 ```
 
-### Create `.env` file
+**Client Setup:**
+
+```bash
+cd ../client
+npm install
+```
+
+### 3\. Environment Variables
+
+Create a `.env` file in the `server` directory and add the following:
 
 ```env
-PORT=5000
-
-# Database
-MONGODB_URI=your_mongodb_uri
-
-# Authentication
-JWT_SECRET=your_jwt_secret
-REFRESH_TOKEN_SECRET=your_refresh_secret
-
-# Email (Nodemailer)
-EMAIL_USER=your_email
-EMAIL_PASSWORD=your_app_password
-
-# Cloud Storage
-CLOUDINARY_NAME=your_cloud_name
-CLOUDINARY_KEY=your_cloud_key
-CLOUDINARY_SECRET=your_cloud_secret
-
-# CORS
-CLIENT_URL=http://localhost:3000
+PORT=8080
+MONGO_URL=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+DEV_MODE=development
 ```
 
-### Start backend server
+### 4\. Run the Project
 
-```sh
+**Start Backend:**
+
+```bash
+cd server
 npm start
 ```
 
-or (for nodemon)
+**Start Frontend:**
 
-```sh
-npm run dev
-```
-
----
-
-# 🖥 Frontend Setup
-
-### Navigate to frontend folder
-
-```sh
-cd frontend
-```
-
-### Install dependencies
-
-```sh
-npm install
-```
-
-### Start development server
-
-```sh
-npm run dev
-```
-
----
-
-# 📂 Project Structure
-
-```
-VienLink-BloodBank/
-│
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   ├── utils/
-│   ├── config/
-│   ├── .env
-│   └── server.js
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── hooks/
-│   │   ├── context/
-│   │   └── utils/
-│   └── public/
-│
-└── README.md
-```
-
----
-
-# 🧪 Running Tests
-
-### Backend tests:
-
-```sh
-npm test
-```
-
-### Frontend tests:
-
-```sh
-npm run test
-```
-
----
-
-# 🔗 API Base URL
-
-```
-https://your-deployment-url.com/api/v1
-```
-
----
-
-# 📡 API Documentation
-
-## 🔐 Authentication APIs
-
-### Register Hospital Admin
-
-```
-POST /api/v1/auth/hospital/register
-```
-
-```json
-{
-  "name": "City Hospital",
-  "email": "admin@city.com",
-  "password": "pass123",
-  "licenseId": "HSP-9091"
-}
-```
-
-### Login (All Roles)
-
-```
-POST /api/v1/auth/login
-```
-
-### Public Registration
-
-```
-POST /api/v1/public/register
-```
-
-### Forgot Password
-
-```
-POST /api/v1/auth/forgot-password
-```
-
-### Reset Password
-
-```
-POST /api/v1/auth/reset-password
-```
-
----
-
-## 🩸 Blood Inventory APIs
-
-### Get Inventory
-
-```
-GET /api/v1/blood/inventory
-```
-
-### Add Blood Unit
-
-```
-POST /api/v1/blood/add
-```
-
-```json
-{
-  "bloodGroup": "A+",
-  "quantity": 3,
-  "expiryDate": "2025-06-12"
-}
-```
-
-### Update Status
-
-```
-PATCH /api/v1/blood/status/:id
-```
-
----
-
-## ❤️ Donation APIs
-
-### Book Donation Slot
-
-```
-POST /api/v1/donation/book
-```
-
-### Donation History
-
-```
-GET /api/v1/donation/history/:donorId
-```
-
----
-
-## 📋 Blood Request APIs
-
-### Hospital Blood Request
-
-```
-POST /api/v1/requests/hospital
-```
-
-### Public Blood Request
-
-```
-POST /api/v1/requests/public
-```
-
-### Request Status
-
-```
-GET /api/v1/requests/status/:requestId
-```
-
----
-
-## 🔁 Inter-Hospital Transfer APIs
-
-### Create Transfer Request
-
-```
-POST /api/v1/transfer/create
-```
-
-### Approve Transfer
-
-```
-PATCH /api/v1/transfer/approve/:id
-```
-
----
-
-## 📅 Blood Camp APIs
-
-### Create Camp
-
-```
-POST /api/v1/camps/create
-```
-
-### Get Camps
-
-```
-GET /api/v1/camps
-```
-
----
-
-## 📡 Real-Time Notifications APIs
-
-### Get User Notifications
-
-```
-GET /api/notifications
-```
-
-### Get Unread Count
-
-```
-GET /api/notifications/unread-count
-```
-
-### Mark Notification as Read
-
-```
-PATCH /api/notifications/:id/read
-```
-
-### Mark All as Read
-
-```
-PATCH /api/notifications/read-all
-```
-
-### Delete Notification
-
-```
-DELETE /api/notifications/:id
-```
-
-### Broadcast Emergency Notification (Admin Only)
-
-```
-POST /api/notifications/broadcast-emergency
-```
-
-### Send Test Notification
-
-```
-POST /api/notifications/test
-```
-
----
-
-# 📦 Response Formats
-
-### Success
-
-```json
-{
-  "success": true,
-  "message": "Operation successful",
-  "data": {}
-}
-```
-
-### Error
-
-```json
-{
-  "success": false,
-  "message": "Validation error",
-  "error": { "details": "Missing fields" }
-}
-```
-
----
-
-# 🚀 Deployment Instructions
-
-## Build Frontend
-
-```sh
-npm run build
-```
-
-## Deploy Backend (Render / Railway / AWS)
-
-* Add environment variables
-* Use start command:
-
-```sh
+```bash
+cd client
 npm start
 ```
 
-## Deploy Frontend (Vercel / Netlify)
+The app should now be running on `http://localhost:3000` (Client) and `http://localhost:8080` (Server).
 
-* Import repo
-* Set env variables
-* Build command:
+-----
 
-```sh
-npm run build
-```
+## 🤝 Contributing
 
----
+Contributions are welcome\! If you'd like to improve VienLink:
 
-# 🤝 Contributing
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
-1. Fork the repo
-2. Create a branch
-3. Commit changes
-4. Open Pull Request
+-----
 
----
+## 📞 Contact
 
-# 
+**Hemant Jawale** \* GitHub: [@hemantjawale](https://www.google.com/search?q=https://github.com/hemantjawale)
+
+  * Project Link: [https://vienlink-1.onrender.com](https://vienlink-1.onrender.com)
+
+-----
+
