@@ -8,6 +8,11 @@ import { ChatbotWidget } from './components/Chatbot/ChatbotWidget';
 import { NotificationToast } from './components/Notifications/NotificationToast';
 import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
+
+// Test environment variables
+console.log('Testing environment variables:');
+console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('MODE:', import.meta.env.MODE);
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { Donors } from './pages/Donors';
