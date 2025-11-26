@@ -7,11 +7,18 @@ import { Input } from '../components/ui/Input';
 import { CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Droplet, Moon, Sun } from 'lucide-react';
 import Spline from '@splinetool/react-spline';
+import api from '../lib/api';
+import toast from 'react-hot-toast';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetStep, setResetStep] = useState(1);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const { login } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
@@ -32,6 +39,42 @@ export const Login = () => {
       console.error('Login error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRequestResetCode = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/auth/forgot-password', { email: resetEmail || email });
+      
+      if (response.data.verificationCode) {
+        toast.success(`Verification code: ${response.data.verificationCode}`);
+      } else {
+        toast.success('Verification code generated');
+      }
+      
+      setResetStep(2);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to generate verification code');
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/auth/reset-password', {
+        email: resetEmail || email,
+        code: resetCode,
+        newPassword,
+      });
+      toast.success('Password reset successfully. You can now sign in.');
+      setShowReset(false);
+      setResetStep(1);
+      setResetEmail('');
+      setResetCode('');
+      setNewPassword('');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to reset password');
     }
   };
 
@@ -98,6 +141,16 @@ export const Login = () => {
                   className="bg-transparent border border-white/10 text-white/85 placeholder-gray-300/70"
                 />
 
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    className="text-xs text-primary-200 hover:text-primary-100 underline"
+                    onClick={() => setShowReset(true)}
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full bg-primary-600/40 hover:bg-primary-700/50 backdrop-blur-md text-white/90 border border-white/5"
@@ -107,17 +160,123 @@ export const Login = () => {
                 </Button>
               </form>
 
-              <div className="mt-6 text-center text-sm text-gray-400/60">
-                Don't have an account?{' '}
-                <Link
-                  to="/register"
-                  className="text-primary-300/60 hover:text-primary-200/80 font-medium"
-                >
-                  Register your hospital
-                </Link>
+              <div className="mt-6 text-center text-sm text-gray-300/80 space-y-1">
+                <p>
+                  Don't have a hospital account?{' '}
+                  <Link
+                    to="/register"
+                    className="text-primary-300/80 hover:text-primary-200/80 font-medium"
+                  >
+                    Register your hospital
+                  </Link>
+                </p>
+                <p>
+                  Want to donate or request blood as an individual?{' '}
+                  <Link
+                    to="/user/signup"
+                    className="text-secondary-300/80 hover:text-secondary-200/80 font-medium"
+                  >
+                    Register as Donor
+                  </Link>
+                </p>
               </div>
             </CardContent>
           </div>
+
+          {showReset && (
+            <div className="mt-4 rounded-xl bg-black/40 backdrop-blur-xl border border-white/10 shadow-xl p-4">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-white/80 text-sm">
+                  {resetStep === 1 ? 'Reset password - send code' : 'Reset password - verify code'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {resetStep === 1 ? (
+                  <form onSubmit={handleRequestResetCode} className="space-y-3">
+                    <Input
+                      label="Email"
+                      type="email"
+                      value={resetEmail || email}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      required
+                      className="bg-transparent border border-white/10 text-white/85 placeholder-gray-300/70"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="border-white/30 text-white/80"
+                        onClick={() => {
+                          setShowReset(false);
+                          setResetStep(1);
+                          setResetEmail('');
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="bg-primary-600/60 hover:bg-primary-700/70 text-white/90 border border-white/10"
+                      >
+                        Send code
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleResetPassword} className="space-y-3">
+                    <Input
+                      label="Verification code"
+                      type="text"
+                      value={resetCode}
+                      onChange={(e) => setResetCode(e.target.value)}
+                      required
+                      className="bg-transparent border border-white/10 text-white/85 placeholder-gray-300/70"
+                    />
+                    <Input
+                      label="New password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      className="bg-transparent border border-white/10 text-white/85 placeholder-gray-300/70"
+                    />
+                    <div className="flex justify-between items-center gap-2">
+                      <button
+                        type="button"
+                        className="text-xs text-primary-200 hover:text-primary-100 underline"
+                        onClick={() => setResetStep(1)}
+                      >
+                        Back
+                      </button>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="border-white/30 text-white/80"
+                          onClick={() => {
+                            setShowReset(false);
+                            setResetStep(1);
+                            setResetEmail('');
+                            setResetCode('');
+                            setNewPassword('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          className="bg-primary-600/60 hover:bg-primary-700/70 text-white/90 border border-white/10"
+                        >
+                          Reset password
+                        </Button>
+                      </div>
+                    </div>
+                  </form>
+                )}
+              </CardContent>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -133,16 +133,38 @@ export const Landing = () => {
               A comprehensive cloud-based solution for managing blood banks, donors, inventory,
               and donation camps with cutting-edge technology.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4">
               <Link to="/register">
                 <Button size="lg" className="text-lg px-8 py-4">
-                  Get Started
+                  Register Hospital
                   <ArrowRight size={20} />
                 </Button>
               </Link>
               <Link to="/login">
-                <Button size="lg" variant="outline" className="text-lg px-8 py-4 bg-white/10 border-white/30 text-white hover:bg-white/20">
-                  Sign In
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 py-4 bg-white/10 border-white/30 text-white hover:bg-white/20"
+                >
+                  Hospital Sign In
+                </Button>
+              </Link>
+              <Link to="/user/signup">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 py-4 bg-white/5 border-white/40 text-white hover:bg-white/15"
+                >
+                  Register as User
+                </Button>
+              </Link>
+              <Link to="/user/login">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 py-4 bg-white/0 border-white/30 text-white/80 hover:bg-white/10"
+                >
+                  Login as User
                 </Button>
               </Link>
             </div>
@@ -225,18 +247,28 @@ export const Landing = () => {
               Ready to Transform Your Blood Bank Management?
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join hospitals and organizations already using Vien Link to streamline their operations and save lives.
+              Join hospitals, donors and recipients already using Vien Link to streamline their operations and save lives.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
               <Link to="/register">
                 <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700">
                   Register Your Hospital
                   <ArrowRight className="ml-2" size={20} />
                 </Button>
               </Link>
+              <Link to="/user/signup">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-primary-400 text-primary-700 dark:text-primary-300 hover:bg-primary-50/40 dark:hover:bg-primary-900/30">
+                  Register as User
+                </Button>
+              </Link>
+              <Link to="/user/login">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-primary-200 text-primary-700 dark:text-primary-200 hover:bg-primary-50/30 dark:hover:bg-primary-900/20">
+                  Login as User
+                </Button>
+              </Link>
               <Link to="/login">
                 <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                  Sign In
+                  Hospital Sign In
                 </Button>
               </Link>
             </div>

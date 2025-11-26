@@ -4,6 +4,7 @@ import BloodRequest from '../models/BloodRequest.model.js';
 import BloodUnit from '../models/BloodUnit.model.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { logAction } from '../utils/auditLogger.js';
+import notificationService from '../services/notification.service.js';
 
 const router = express.Router();
 
@@ -179,6 +180,9 @@ router.put('/:id/approve', authorize('hospital_admin'), async (req, res, next) =
       unitsReserved: availableUnits.length,
     }, req);
 
+    // Send notification to requester
+    await notificationService.notifyBloodRequestApproved(bloodRequest._id, req.user.hospitalId);
+
     res.json({
       success: true,
       data: bloodRequest,
@@ -236,6 +240,9 @@ router.put(
       await logAction('BLOOD_REQUEST_REJECTED', 'BloodRequest', bloodRequest._id, req.user._id, req.user.hospitalId, {
         reason: req.body.reason,
       }, req);
+
+      // Send notification to requester
+      await notificationService.notifyBloodRequestRejected(bloodRequest._id, req.body.reason);
 
       res.json({
         success: true,
@@ -312,6 +319,9 @@ router.put('/:id/fulfill', authorize('hospital_admin'), async (req, res, next) =
     await logAction('BLOOD_REQUEST_FULFILLED', 'BloodRequest', bloodRequest._id, req.user._id, req.user.hospitalId, {
       unitsIssued: fulfilledUnits.length,
     }, req);
+
+    // Send notification to requester
+    await notificationService.notifyBloodRequestFulfilled(bloodRequest._id);
 
     res.json({
       success: true,

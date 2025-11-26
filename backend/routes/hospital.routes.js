@@ -183,6 +183,24 @@ router.get('/approved-list', authorize('super_admin', 'hospital_admin', 'staff')
   }
 );
 
+// Public: list approved hospitals for common users
+// @route   GET /api/hospitals/public/approved
+// @access  Public
+router.get('/public/approved', async (req, res, next) => {
+  try {
+    const hospitals = await Hospital.find({ isApproved: true })
+      .select('name address phone status')
+      .sort({ name: 1 });
+
+    res.json({
+      success: true,
+      data: hospitals,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.use(protect);
 
 // @route   GET /api/hospitals/approved-list

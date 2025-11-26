@@ -542,31 +542,42 @@ export const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Blood Group Distribution Chart */}
+        {/* Blood Group Distribution - Blood Bag Visualization */}
         <Card className="h-[400px]">
           <CardHeader>
-            <CardTitle>Blood Group Distribution</CardTitle>
+            <CardTitle>Blood Stock by Group</CardTitle>
           </CardHeader>
-          <CardContent className="h-[calc(100%-80px)]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData.bloodGroupData}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="available" name="Available" fill="#3b82f6" radius={[4, 4, 0, 0]}>
-                  {chartData.bloodGroupData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={`#3b82f6${90 - (index * 10)}`} />
-                  ))}
-                </Bar>
-                <Bar dataKey="total" name="Total" fill="#10b981" radius={[4, 4, 0, 0]}>
-                  {chartData.bloodGroupData.map((entry, index) => (
-                    <Cell key={`cell-total-${index}`} fill={`#10b981${90 - (index * 10)}`} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          <CardContent className="h-[calc(100%-80px)] flex items-center justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-xl">
+              {chartData.bloodGroupData.map((group) => {
+                const total = group.total || 0;
+                const available = group.available || 0;
+                const fillPercent = total > 0 ? Math.min(100, Math.round((available / total) * 100)) : 0;
+
+                return (
+                  <div key={group.name} className="flex flex-col items-center gap-2">
+                    <div className="relative w-16 h-28 rounded-b-xl border-2 border-red-500 bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
+                      {/* Neck */}
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-5 h-4 rounded-t-md border-2 border-red-500 bg-white dark:bg-gray-900"></div>
+                      {/* Fill */}
+                      <div
+                        className="absolute bottom-0 left-0 w-full bg-red-500/90"
+                        style={{ height: `${fillPercent}%` }}
+                      />
+                      {/* Label inside bag */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-[10px] font-semibold text-white drop-shadow">
+                        <span>{group.name}</span>
+                        <span>{available}/{total}</span>
+                      </div>
+                    </div>
+                    <div className="text-center text-xs text-gray-700 dark:text-gray-200">
+                      <p className="font-semibold">{group.name}</p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400">{fillPercent}% full</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
       </div>

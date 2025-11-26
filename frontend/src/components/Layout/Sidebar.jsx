@@ -30,6 +30,7 @@ const menuItems = {
     { path: '/blood-requests', label: 'Blood Requests', icon: FileText },
     { path: '/inter-hospital-requests', label: 'Inter-Hospital Requests', icon: ArrowRightLeft },
     { path: '/blood-camps', label: 'Blood Camps', icon: Calendar },
+    { path: '/donation-slots', label: 'Donation Slots', icon: Calendar },
     { path: '/staff', label: 'Staff', icon: UserCog },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
   ],
@@ -40,6 +41,7 @@ const menuItems = {
     { path: '/blood-requests', label: 'Blood Requests', icon: FileText },
     { path: '/inter-hospital-requests', label: 'Inter-Hospital Requests', icon: ArrowRightLeft },
     { path: '/blood-camps', label: 'Blood Camps', icon: Calendar },
+    { path: '/donation-slots', label: 'Donation Slots', icon: Calendar },
   ],
 };
 
