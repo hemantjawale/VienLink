@@ -285,7 +285,7 @@ export const Landing = () => {
               <span className="text-xl font-bold text-white">Vien Link</span>
             </div>
             <p className="mb-4">Blood Bank Management System</p>
-            <p className="text-sm">© 2024 Vien Link. All rights reserved.</p>
+            <p className="text-sm">© 2025 Vien Link. All rights reserved.</p>
           </div>
         </div>
       </footer>
