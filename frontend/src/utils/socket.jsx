@@ -12,9 +12,20 @@ class SocketService {
 
   // Initialize socket connection
   initialize(token, userType = 'hospital') {
-    if (this.socket && this.connected) {
-      return this.socket;
+    // Don't connect if no token provided
+    if (!token || token === 'test-token') {
+      console.log('🔌 No valid token provided, skipping socket initialization');
+      return null;
     }
+
+    // Disconnect existing socket if any
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+    }
+
+    this.connected = false;
+    this.userType = userType;
 
     const serverUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     
@@ -24,9 +35,12 @@ class SocketService {
       },
       transports: ['websocket', 'polling'],
       reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-      maxReconnectionAttempts: 5
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 10,
+      timeout: 10000,
+      forceNew: false,
+      autoConnect: true
     });
 
     this.setupEventListeners();
@@ -51,9 +65,17 @@ class SocketService {
     });
 
     this.socket.on('connect_error', (error) => {
-      console.error('🔌 Socket connection error:', error);
+      console.error('🔌 Socket connection error:', error.message);
       this.connected = false;
-      this.emit('connection_change', { connected: false });
+      
+      // If authentication error, don't try to reconnect
+      if (error.message === 'Authentication token required' || error.message === 'jwt malformed' || error.message === 'invalid signature') {
+        console.log('🔌 Authentication failed, stopping reconnection attempts');
+        this.socket.disconnect();
+        this.emit('connection_change', { connected: false, error: 'Authentication failed' });
+      } else {
+        this.emit('connection_change', { connected: false, error: error.message });
+      }
     });
 
     this.socket.on('reconnect', (attemptNumber) => {
@@ -225,14 +247,13 @@ class SocketService {
   // Emit custom event
   emit(event, data) {
     if (this.listeners.has(event)) {
-      this.listeners.get(event).forEach(callback => {
-        try {
-          callback(data);
-        } catch (error) {
-          console.error(`Error in socket event listener for ${event}:`, error);
-        }
-      });
+      this.listeners.get(event).forEach(callback => callback(data));
     }
+  }
+
+  // Get socket instance
+  getSocket() {
+    return this.socket;
   }
 
   // Disconnect socket
@@ -241,18 +262,8 @@ class SocketService {
       this.socket.disconnect();
       this.socket = null;
       this.connected = false;
-      console.log('🔌 Socket disconnected');
+      console.log('🔌 Socket disconnected manually');
     }
-  }
-
-  // Check if connected
-  isConnected() {
-    return this.connected;
-  }
-
-  // Get socket instance
-  getSocket() {
-    return this.socket;
   }
 }
 
@@ -261,8 +272,46 @@ const socketService = new SocketService();
 
 // React hook for using socket
 export const useSocket = () => {
-  const { token } = useAuth();
-  const { token: publicToken } = usePublicAuth();
+  // Ensure socketService exists
+  if (!socketService) {
+    console.error('🔌 SocketService not initialized');
+    return {
+      socket: null,
+      isConnected: false,
+      notifications: [],
+      unreadCount: 0,
+      clearNotifications: () => {},
+      markAsRead: () => {},
+      markAllAsRead: () => {},
+      joinRoom: () => {},
+      leaveRoom: () => {},
+      sendLocationUpdate: () => {},
+      startTyping: () => {},
+      stopTyping: () => {},
+      disconnect: () => {}
+    };
+  }
+
+  // Safe access to auth contexts with fallbacks
+  let token = null;
+  let publicToken = null;
+  
+  try {
+    const authContext = useAuth();
+    token = authContext?.token;
+  } catch (error) {
+    // Auth context not available (likely in public-only area)
+    console.log('🔌 Auth context not available');
+  }
+  
+  try {
+    const publicAuthContext = usePublicAuth();
+    publicToken = publicAuthContext?.token;
+  } catch (error) {
+    // Public auth context not available (likely in hospital-only area)
+    console.log('🔌 Public auth context not available');
+  }
+  
   const [isConnected, setIsConnected] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -271,9 +320,21 @@ export const useSocket = () => {
     const currentToken = token || publicToken;
     console.log('🔌 Socket token available:', !!currentToken);
     
-    // Always try to connect, even without token for testing
-    console.log('🔌 Initializing socket connection...');
-    const socket = socketService.initialize(currentToken || 'test-token', token ? 'hospital' : 'public');
+    // If no token, disconnect socket and don't try to connect
+    if (!currentToken) {
+      console.log('🔌 No token available, disconnecting socket...');
+      if (socketService && socketService.disconnect) {
+        socketService.disconnect();
+      }
+      setIsConnected(false);
+      return;
+    }
+    
+    // Only connect with a real token
+    console.log('🔌 Initializing socket connection with real token...');
+    const socket = socketService && socketService.initialize 
+      ? socketService.initialize(currentToken, token ? 'hospital' : 'public')
+      : null;
     
     // Setup listeners
     const handleConnectionChange = ({ connected, error }) => {
@@ -293,17 +354,23 @@ export const useSocket = () => {
       setUnreadCount(prev => prev + 1);
     };
 
-    socketService.on('connection_change', handleConnectionChange);
-    socketService.on('notification', handleNotification);
-    socketService.on('emergency_notification', handleEmergencyNotification);
-
-    // Request notification permission
-    socketService.requestNotificationPermission();
+    if (socketService) {
+      socketService.on('connection_change', handleConnectionChange);
+      socketService.on('notification', handleNotification);
+      socketService.on('emergency_notification', handleEmergencyNotification);
+      
+      // Request notification permission
+      if (socketService.requestNotificationPermission) {
+        socketService.requestNotificationPermission();
+      }
+    }
 
     return () => {
-      socketService.off('connection_change', handleConnectionChange);
-      socketService.off('notification', handleNotification);
-      socketService.off('emergency_notification', handleEmergencyNotification);
+      if (socketService) {
+        socketService.off('connection_change', handleConnectionChange);
+        socketService.off('notification', handleNotification);
+        socketService.off('emergency_notification', handleEmergencyNotification);
+      }
     };
   }, [token, publicToken]);
 
@@ -328,12 +395,12 @@ export const useSocket = () => {
     clearNotifications,
     markAsRead,
     markAllAsRead,
-    joinRoom: socketService.joinRoom.bind(socketService),
-    leaveRoom: socketService.leaveRoom.bind(socketService),
-    sendLocationUpdate: socketService.sendLocationUpdate.bind(socketService),
-    startTyping: socketService.startTyping.bind(socketService),
-    stopTyping: socketService.stopTyping.bind(socketService),
-    disconnect: socketService.disconnect.bind(socketService)
+    joinRoom: socketService.joinRoom?.bind(socketService) || (() => {}),
+    leaveRoom: socketService.leaveRoom?.bind(socketService) || (() => {}),
+    sendLocationUpdate: socketService.sendLocationUpdate?.bind(socketService) || (() => {}),
+    startTyping: socketService.startTyping?.bind(socketService) || (() => {}),
+    stopTyping: socketService.stopTyping?.bind(socketService) || (() => {}),
+    disconnect: socketService.disconnect?.bind(socketService) || (() => {})
   };
 };
 

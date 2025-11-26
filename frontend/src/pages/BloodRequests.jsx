@@ -113,8 +113,8 @@ export const BloodRequests = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white dark:text-white">Blood Requests</h1>
-          <p className="mt-1 text-gray-200 dark:text-gray-300">Manage blood requests and approvals</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Blood Requests</h1>
+          <p className="mt-1 text-gray-600 dark:text-gray-300">Manage blood requests and approvals</p>
         </div>
         <Button onClick={() => setShowModal(true)}>
           <Plus size={20} />
@@ -145,10 +145,10 @@ export const BloodRequests = () => {
         {requests.map((request) => (
           <Card key={request._id}>
             <CardContent className="p-6">
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-white dark:text-white">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {request.patientName}
                     </h3>
                     <span
@@ -167,7 +167,7 @@ export const BloodRequests = () => {
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">{request.reason}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-500">
                     <span>Quantity: {request.quantity} units</span>
                     <span>•</span>
                     <span>
@@ -183,9 +183,9 @@ export const BloodRequests = () => {
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-2 ml-4">
+                <div className="flex-shrink-0">
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                       request.status === 'approved'
                         ? 'bg-secondary-100 text-secondary-700'
                         : request.status === 'pending'
@@ -201,11 +201,12 @@ export const BloodRequests = () => {
               </div>
 
               {request.status === 'pending' && (
-                <div className="flex gap-2 mt-4 pt-4 border-t">
+                <div className="flex flex-col sm:flex-row gap-2 mt-4 pt-4 border-t">
                   <Button
                     size="sm"
                     variant="secondary"
                     onClick={() => handleApprove(request._id)}
+                    className="w-full sm:w-auto"
                   >
                     <CheckCircle size={16} />
                     Approve
@@ -214,6 +215,7 @@ export const BloodRequests = () => {
                     size="sm"
                     variant="danger"
                     onClick={() => handleReject(request._id)}
+                    className="w-full sm:w-auto"
                   >
                     <XCircle size={16} />
                     Reject
@@ -227,6 +229,7 @@ export const BloodRequests = () => {
                     size="sm"
                     variant="primary"
                     onClick={() => handleFulfill(request._id)}
+                    className="w-full sm:w-auto"
                   >
                     Fulfill Request
                   </Button>

@@ -20,14 +20,6 @@ export const initializeSocket = (server) => {
     try {
       const token = socket.handshake.auth.token;
       
-      // Allow test connections for debugging
-      if (token === 'test-token') {
-        socket.user = { _id: 'test-user', firstName: 'Test', lastName: 'User' };
-        socket.userType = 'hospital';
-        console.log('🔌 Allowing test connection');
-        return next();
-      }
-      
       if (!token) {
         return next(new Error('Authentication token required'));
       }

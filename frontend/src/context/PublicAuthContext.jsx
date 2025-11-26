@@ -33,10 +33,22 @@ export const PublicAuthProvider = ({ children }) => {
     return res.data;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // Call backend logout endpoint
+      await publicApi.post('/public-auth/logout');
+    } catch (error) {
+      // Even if backend logout fails, continue with client logout
+      console.error('Backend logout failed:', error);
+    }
+    
+    // Always clear local storage and state
     localStorage.removeItem('publicToken');
     localStorage.removeItem('publicUser');
     setUser(null);
+    
+    // Redirect to login page
+    window.location.href = '/user/login';
   };
 
   return (

@@ -161,18 +161,18 @@ export const BloodUnits = () => {
       </Card>
 
       {/* Units Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {filteredUnits.map((unit) => {
           const isExpiringSoon = new Date(unit.expiryDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
           const isExpired = new Date(unit.expiryDate) < new Date();
 
           return (
             <Card key={unit._id}>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Bag ID</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{unit.bagId}</p>
+                    <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white truncate">{unit.bagId}</p>
                   </div>
                   <button
                     onClick={(e) => {
@@ -185,7 +185,7 @@ export const BloodUnits = () => {
                       });
                       setShowQRModal(true);
                     }}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors group"
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors group flex-shrink-0"
                     aria-label="View QR code"
                     title="View QR Code"
                   >
@@ -194,13 +194,13 @@ export const BloodUnits = () => {
                 </div>
 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                     <span className="text-sm text-gray-600 dark:text-gray-300">Blood Group</span>
                     <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100">
                       {unit.bloodGroup}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                     <span className="text-sm text-gray-600 dark:text-gray-300">Status</span>
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded-full ${
@@ -214,30 +214,30 @@ export const BloodUnits = () => {
                       {unit.status}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                     <span className="text-sm text-gray-600 dark:text-gray-300">Donor</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 text-right">
                       {unit.donorId?.firstName} {unit.donorId?.lastName}
                     </span>
                   </div>
                   {unit.rackNumber && (
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                       <span className="text-sm text-gray-600 dark:text-gray-300">Rack / Location</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100 text-right">
                         {unit.rackNumber}
                       </span>
                     </div>
                   )}
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                     <span className="text-sm text-gray-600 dark:text-gray-300">Collection Date</span>
-                    <span className="text-sm text-gray-900 dark:text-gray-100">
+                    <span className="text-sm text-gray-900 dark:text-gray-100 text-right">
                       {format(new Date(unit.collectionDate), 'MMM dd, yyyy')}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                     <span className="text-sm text-gray-600 dark:text-gray-300">Expiry Date</span>
                     <span
-                      className={`text-sm font-medium ${
+                      className={`text-sm font-medium text-right ${
                         isExpired
                           ? 'text-red-600 dark:text-red-400'
                           : isExpiringSoon

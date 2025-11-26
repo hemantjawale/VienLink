@@ -215,4 +215,19 @@ router.put(
   }
 );
 
+// Public user logout
+router.post('/logout', protectPublic, async (req, res, next) => {
+  try {
+    // In a real implementation, you might want to:
+    // 1. Add the token to a blacklist
+    // 2. Update user's last logout time
+    // 3. Clear any server-side session data
+    
+    // For now, just return success - client handles token removal
+    res.json({ success: true, message: 'Logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

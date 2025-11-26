@@ -5,7 +5,43 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import toast from 'react-hot-toast';
-import Spline from '@splinetool/react-spline';
+
+// Beautiful animated background component
+const AnimatedBackground = () => (
+  <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-purple-900 to-blue-900 overflow-hidden">
+    <div className="absolute inset-0 bg-black/20" />
+    
+    {/* Animated blood drops */}
+    <div className="absolute top-10 left-10 w-4 h-4 bg-red-500 rounded-full opacity-60 animate-bounce" style={{ animationDuration: '2s' }} />
+    <div className="absolute top-20 right-20 w-3 h-3 bg-red-400 rounded-full opacity-50 animate-bounce delay-300" style={{ animationDuration: '2.5s' }} />
+    <div className="absolute bottom-20 left-20 w-5 h-5 bg-red-600 rounded-full opacity-70 animate-bounce delay-500" style={{ animationDuration: '1.8s' }} />
+    
+    {/* Floating medical symbols */}
+    <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-red-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+    <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000" style={{ animationDuration: '5s' }} />
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-500" style={{ animationDuration: '3s' }} />
+    
+    {/* DNA helix animation */}
+    <div className="absolute top-0 left-1/2 w-1 h-full bg-gradient-to-b from-transparent via-red-500/30 to-transparent opacity-50 animate-spin" style={{ animationDuration: '20s' }} />
+    
+    {/* Pulse waves */}
+    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <div className="w-96 h-96 border border-red-500/20 rounded-full animate-ping" style={{ animationDuration: '3s' }} />
+      <div className="absolute top-0 w-96 h-96 border border-blue-500/20 rounded-full animate-ping delay-1000" style={{ animationDuration: '3.5s' }} />
+      <div className="absolute top-0 w-96 h-96 border border-purple-500/20 rounded-full animate-ping delay-2000" style={{ animationDuration: '4s' }} />
+    </div>
+    
+    {/* Floating particles */}
+    <div className="absolute top-10 left-1/3 w-2 h-2 bg-white rounded-full opacity-30 animate-pulse" style={{ animationDuration: '2s' }} />
+    <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-white rounded-full opacity-40 animate-pulse delay-700" style={{ animationDuration: '2.5s' }} />
+    <div className="absolute bottom-1/3 left-1/4 w-2 h-2 bg-white rounded-full opacity-30 animate-pulse delay-1200" style={{ animationDuration: '3s' }} />
+    
+    {/* Additional floating elements */}
+    <div className="absolute top-1/4 right-1/3 w-6 h-6 bg-red-400/30 rounded-full animate-pulse delay-1500" style={{ animationDuration: '4s' }} />
+    <div className="absolute bottom-1/3 right-1/3 w-4 h-4 bg-blue-400/30 rounded-full animate-pulse delay-800" style={{ animationDuration: '3.5s' }} />
+    <div className="absolute top-3/4 left-1/3 w-5 h-5 bg-purple-400/30 rounded-full animate-pulse delay-1800" style={{ animationDuration: '4.5s' }} />
+  </div>
+);
 
 const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -52,10 +88,8 @@ export const UserSignup = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* 3D Model Background */}
-      <div className="absolute inset-0 w-full h-full z-0">
-        <Spline scene="https://prod.spline.design/H3KNk3yz8XLS22If/scene.splinecode" />
-      </div>
+      {/* Animated Background */}
+      <AnimatedBackground />
 
       {/* Overlay Gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/20 to-transparent z-10" />

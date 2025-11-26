@@ -200,16 +200,6 @@ export const EmergencyBanner = () => {
 export const ConnectionStatus = () => {
   const { isConnected } = useSocket();
 
-  if (isConnected) {
-    return null;
-  }
-
-  return (
-    <div className="fixed bottom-4 right-4 z-50 bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-      <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-      <span className="text-sm font-medium">
-        Connection lost. Reconnecting...
-      </span>
-    </div>
-  );
+  // Don't show anything if not connected - this is normal for unauthenticated users
+  return null;
 };

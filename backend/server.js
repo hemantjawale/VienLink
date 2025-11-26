@@ -18,9 +18,52 @@ const __dirname = dirname(__filename);
 const app = express();
 
 // -------------------- Middleware --------------------
+// Handle preflight requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.status(200).send();
+});
+
+// Add CORS headers to all responses
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "http://localhost:3000",
+    "http://localhost:5173", 
+    "https://vienlink-frontend.onrender.com",
+    "https://vienlink.onrender.com" // Add your frontend URL when deployed
+  ];
+  
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    res.status(200).send();
+    return;
+  }
+  
+  next();
+});
+
 app.use(cors({
-  origin: "*",
-  credentials: true
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://vienlink-frontend.onrender.com",
+    "https://vienlink.onrender.com" // Add your frontend URL when deployed
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -98,6 +141,16 @@ app.get("/", (req, res) => {
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "VienLink API is running" });
+});
+
+// Test CORS endpoint
+app.get("/api/test-cors", (req, res) => {
+  res.json({ 
+    status: "OK", 
+    message: "CORS test successful",
+    origin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // -------------------- Error Handler --------------------

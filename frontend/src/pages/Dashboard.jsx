@@ -543,36 +543,36 @@ export const Dashboard = () => {
         </Card>
 
         {/* Blood Group Distribution - Blood Bag Visualization */}
-        <Card className="h-[400px]">
+        <Card className="h-[450px] sm:h-[400px] md:h-[400px] lg:h-[400px]">
           <CardHeader>
             <CardTitle>Blood Stock by Group</CardTitle>
           </CardHeader>
-          <CardContent className="h-[calc(100%-80px)] flex items-center justify-center">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-xl">
+          <CardContent className="h-[calc(100%-80px)] flex items-center justify-center p-2 sm:p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-2 sm:gap-4 md:gap-6 w-full max-w-xs sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
               {chartData.bloodGroupData.map((group) => {
                 const total = group.total || 0;
                 const available = group.available || 0;
                 const fillPercent = total > 0 ? Math.min(100, Math.round((available / total) * 100)) : 0;
 
                 return (
-                  <div key={group.name} className="flex flex-col items-center gap-2">
-                    <div className="relative w-16 h-28 rounded-b-xl border-2 border-red-500 bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
+                  <div key={group.name} className="flex flex-col items-center gap-2 sm:gap-3">
+                    <div className="relative w-12 h-20 sm:w-14 sm:h-24 md:w-16 md:h-28 lg:w-20 lg:h-32 xl:w-24 xl:h-36 rounded-b-xl border-2 border-red-500 bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
                       {/* Neck */}
-                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-5 h-4 rounded-t-md border-2 border-red-500 bg-white dark:bg-gray-900"></div>
+                      <div className="absolute -top-2 sm:-top-3 md:-top-4 left-1/2 -translate-x-1/2 w-3 h-2 sm:w-4 sm:h-3 md:w-5 md:h-4 lg:w-6 lg:h-5 xl:w-7 xl:h-6 rounded-t-md border-2 border-red-500 bg-white dark:bg-gray-900"></div>
                       {/* Fill */}
                       <div
                         className="absolute bottom-0 left-0 w-full bg-red-500/90"
                         style={{ height: `${fillPercent}%` }}
                       />
                       {/* Label inside bag */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-[10px] font-semibold text-white drop-shadow">
-                        <span>{group.name}</span>
-                        <span>{available}/{total}</span>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-[8px] sm:text-[9px] md:text-[10px] lg:text-[11px] xl:text-[12px] font-semibold text-white drop-shadow">
+                        <span className="leading-tight">{group.name}</span>
+                        <span className="leading-tight">{available}/{total}</span>
                       </div>
                     </div>
                     <div className="text-center text-xs text-gray-700 dark:text-gray-200">
-                      <p className="font-semibold">{group.name}</p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">{fillPercent}% full</p>
+                      <p className="font-semibold text-[10px] sm:text-xs md:text-sm">{group.name}</p>
+                      <p className="text-[8px] sm:text-[9px] md:text-[10px] lg:text-[11px] text-gray-500 dark:text-gray-400">{fillPercent}% full</p>
                     </div>
                   </div>
                 );
@@ -589,22 +589,22 @@ export const Dashboard = () => {
             <CardTitle>Blood Inventory by Group</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {stats.inventorySummary.map((item) => (
                 <div
                   key={item._id}
-                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
+                  className="p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
                 >
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{item._id}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{item._id}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">
                     Available: <span className="font-medium text-gray-900 dark:text-white">{item.available}</span>
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                     Total: <span className="font-medium text-gray-900 dark:text-white">{item.total}</span>
                   </p>
                   {item.expiringSoon > 0 && (
                     <p className="text-xs text-orange-600 dark:text-orange-400 mt-2 flex items-center gap-1">
-                      <AlertCircle size={14} />
+                      <AlertCircle size={12} sm:size={14} />
                       {item.expiringSoon} expiring soon
                     </p>
                   )}
