@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
-import api from '../../lib/api';
+import publicApi from '../../lib/publicApi';
 import toast from 'react-hot-toast';
 
 export const ChatbotWidget = () => {
@@ -8,7 +8,7 @@ export const ChatbotWidget = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: 'Hello! I\'m the Vien Link assistant. How can I help you today?',
+      text: 'Hello! I\'m the VienLink assistant. How can I help you today?',
       sender: 'bot',
       timestamp: new Date(),
     },
@@ -43,8 +43,14 @@ export const ChatbotWidget = () => {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/chatbot/chat', {
+      const history = messages.map((m) => ({
+        role: m.sender,
+        content: m.text,
+      }));
+
+      const response = await publicApi.post('/chatbot/chat', {
         message: inputValue,
+        history,
       });
 
       const botMessage = {
@@ -87,16 +93,14 @@ export const ChatbotWidget = () => {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${
-                  message.sender === 'user' ? 'justify-end' : 'justify-start'
-                }`}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
               >
                 <div
-                  className={`max-w-xs px-4 py-2 rounded-lg ${
-                    message.sender === 'user'
+                  className={`max-w-xs px-4 py-2 rounded-lg ${message.sender === 'user'
                       ? 'bg-primary-600 text-white rounded-br-none'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none'
-                  }`}
+                    }`}
                 >
                   <p className="text-sm">{message.text}</p>
                   <span className="text-xs opacity-70 mt-1 block">

@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react';
 import api from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
-import { CheckCircle, XCircle, Building2, AlertCircle, Filter } from 'lucide-react';
+import { CheckCircle, XCircle, Building2, AlertCircle, Filter, Heart, Search, MapPin, Mail, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
 export const Hospitals = () => {
+  const { user } = useAuth();
   const [hospitals, setHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // 'all', 'pending', 'approved', 'rejected'
+  const [searchTerm, setSearchTerm] = useState('');
+  const [likingId, setLikingId] = useState(null); // track which hospital is being liked
 
   useEffect(() => {
     fetchHospitals();
@@ -57,6 +61,33 @@ export const Hospitals = () => {
     }
   };
 
+  const handleLike = async (hospitalId) => {
+    setLikingId(hospitalId);
+    try {
+      const res = await api.put(`/hospitals/${hospitalId}/like`);
+      setHospitals((prev) =>
+        prev.map((h) => {
+          if (h._id === hospitalId) {
+            const liked = res.data.data.liked;
+            return {
+              ...h,
+              likesCount: res.data.data.likesCount,
+              likes: liked
+                ? [...(h.likes || []), user?.id]
+                : (h.likes || []).filter((id) => id !== user?.id),
+            };
+          }
+          return h;
+        })
+      );
+      toast.success(res.data.message, { duration: 1500, icon: res.data.data.liked ? '❤️' : '💔' });
+    } catch (error) {
+      toast.error('Failed to like hospital');
+    } finally {
+      setTimeout(() => setLikingId(null), 300);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -74,6 +105,14 @@ export const Hospitals = () => {
     if (filter === 'approved') return hospital.status === 'approved';
     if (filter === 'rejected') return hospital.status === 'rejected';
     return true;
+  }).filter(h => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      h.name?.toLowerCase().includes(term) ||
+      h.email?.toLowerCase().includes(term) ||
+      h.address?.city?.toLowerCase().includes(term)
+    );
   });
 
   return (
@@ -139,19 +178,35 @@ export const Hospitals = () => {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="col-span-1 md:col-span-2 border-none shadow-sm bg-white dark:bg-gray-800 rounded-2xl">
           <CardContent className="p-4">
-            <Select
-              label="Filter"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              options={[
-                { value: 'all', label: 'All Hospitals' },
-                { value: 'pending', label: 'Pending Only' },
-                { value: 'approved', label: 'Approved Only' },
-                { value: 'rejected', label: 'Rejected Only' },
-              ]}
-            />
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search hospitals by name, email, or city..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg leading-5 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+              <div className="w-full sm:w-48">
+                <Select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  options={[
+                    { value: 'all', label: 'All Hospitals' },
+                    { value: 'pending', label: 'Pending Only' },
+                    { value: 'approved', label: 'Approved Only' },
+                    { value: 'rejected', label: 'Rejected Only' },
+                  ]}
+                  className="w-full"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -175,43 +230,83 @@ export const Hospitals = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredHospitals.map((hospital) => (
-          <Card key={hospital._id}>
-            <CardContent className="p-6">
+          <Card key={hospital._id} className="group hover:shadow-xl transition-all duration-300 border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
+            <div className="h-2 bg-gradient-to-r from-primary-500 to-secondary-500" />
+            <CardContent className="p-6 flex-1 flex flex-col">
               <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-primary-50 rounded-lg">
-                    <Building2 className="text-primary-600" size={24} />
+                <div className="flex gap-4">
+                  <div className="p-3 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/40 dark:to-primary-800/40 rounded-xl shadow-inner border border-primary-100 dark:border-primary-800 h-fit">
+                    <Building2 className="text-primary-600 dark:text-primary-400" size={24} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{hospital.name}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-300">{hospital.email}</p>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white leading-tight group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{hospital.name}</h3>
+                    <div className="flex items-center gap-1.5 mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      <Mail size={14} />
+                      <span className="truncate max-w-[180px]" title={hospital.email}>{hospital.email}</span>
+                    </div>
                   </div>
                 </div>
-                <span
-                  className={`px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0 ${
-                    hospital.status === 'approved'
-                      ? 'bg-secondary-100 text-secondary-800'
-                      : hospital.status === 'rejected'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-orange-100 text-orange-800'
-                  }`}
-                >
-                  {hospital.status === 'approved' ? 'Approved' : hospital.status === 'rejected' ? 'Rejected' : 'Pending'}
-                </span>
               </div>
 
-              <div className="space-y-2 mb-4 text-sm text-gray-600 dark:text-gray-300">
-                <p>{hospital.phone}</p>
+              {/* Status Badge */}
+              <div className="flex items-center justify-between mb-5 border-b border-gray-100 dark:border-gray-800 pb-4">
+                <span
+                  className={`px-3 py-1 text-xs font-bold rounded-full border shadow-sm ${hospital.status === 'approved'
+                      ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800'
+                      : hospital.status === 'rejected'
+                        ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800'
+                        : 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800'
+                    }`}
+                >
+                  {hospital.status === 'approved' ? '✓ Approved' : hospital.status === 'rejected' ? '✕ Rejected' : '⏳ Pending'}
+                </span>
+
+                {/* Like Button */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleLike(hospital._id)}
+                    disabled={likingId === hospital._id}
+                    className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    title={hospital.likes?.includes(user?.id) ? 'Unlike this hospital' : 'Like this hospital'}
+                  >
+                    <Heart
+                      size={18}
+                      className={`transition-all duration-300 ${hospital.likes?.includes(user?.id)
+                        ? 'text-red-500 fill-red-500 scale-110 drop-shadow-sm'
+                        : 'text-gray-400 dark:text-gray-500'
+                        } ${likingId === hospital._id ? 'animate-ping' : ''}`}
+                    />
+                    <span className={`text-sm font-semibold ${hospital.likes?.includes(user?.id) ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                      {hospital.likesCount || 0}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-6 flex-1">
+                <div className="flex items-start gap-3">
+                  <Phone className="text-gray-400 mt-0.5" size={16} />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{hospital.phone}</span>
+                </div>
                 {hospital.address && (
-                  <p>
-                    {hospital.address.street}, {hospital.address.city}, {hospital.address.state}
-                  </p>
+                  <div className="flex items-start gap-3">
+                    <MapPin className="text-gray-400 mt-0.5 flex-shrink-0" size={16} />
+                    <span className="text-sm text-gray-600 dark:text-gray-300 leading-tight">
+                      {hospital.address.street},<br />
+                      <span className="font-semibold">{hospital.address.city}</span>, {hospital.address.state}
+                    </span>
+                  </div>
                 )}
-                {hospital.licenseNumber && <p>License: {hospital.licenseNumber}</p>}
+                {hospital.licenseNumber && (
+                  <div className="mt-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-2 text-xs border border-gray-100 dark:border-gray-700">
+                    <span className="text-gray-500 font-medium">License No: </span>
+                    <span className="font-mono text-gray-800 dark:text-gray-200">{hospital.licenseNumber}</span>
+                  </div>
+                )}
                 {hospital.certificate && (
-                  <div>
+                  <div className="mt-2">
                     <p className="font-medium text-gray-700 dark:text-gray-300 mb-1">Certificate:</p>
                     <div className="flex items-center gap-2">
                       <span className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
@@ -327,10 +422,10 @@ export const Hospitals = () => {
               {filter === 'pending'
                 ? 'No pending hospitals'
                 : filter === 'approved'
-                ? 'No approved hospitals'
-                : filter === 'rejected'
-                ? 'No rejected hospitals'
-                : 'No hospitals found'}
+                  ? 'No approved hospitals'
+                  : filter === 'rejected'
+                    ? 'No rejected hospitals'
+                    : 'No hospitals found'}
             </p>
             {filter !== 'all' && (
               <Button

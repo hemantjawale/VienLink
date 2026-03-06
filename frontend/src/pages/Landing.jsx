@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import publicApi from '../lib/publicApi';
 import { Button } from '../components/ui/Button';
 import Spline from '@splinetool/react-spline';
 import {
@@ -18,10 +20,32 @@ import {
   Database,
   Moon,
   Sun,
+  Heart
 } from 'lucide-react';
 
 export const Landing = () => {
   const { darkMode, toggleDarkMode } = useTheme();
+  const [impactStats, setImpactStats] = useState({
+    totalDonations: 0,
+    livesSaved: 0,
+    activeDonors: 0,
+    emergencyRequestsSolved: 100
+  });
+
+  useEffect(() => {
+    const fetchImpact = async () => {
+      try {
+        const res = await publicApi.get('/analytics/public-impact');
+        if (res.data.success) {
+          setImpactStats(res.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to load impact stats:", err);
+      }
+    };
+    fetchImpact();
+  }, []);
+
   const features = [
     {
       icon: Users,
@@ -113,10 +137,10 @@ export const Landing = () => {
         <div className="absolute inset-0 w-full h-full">
           <Spline scene="https://prod.spline.design/qdbsDTX9cHj2NG-L/scene.splinecode" />
         </div>
-        
+
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
-        
+
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="max-w-2xl">
@@ -149,6 +173,15 @@ export const Landing = () => {
                   Hospital Sign In
                 </Button>
               </Link>
+              <Link to="/live-map">
+                <Button
+                  size="lg"
+                  className="text-lg px-8 py-4 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700 text-white border-0"
+                >
+                  <MapPin className="mr-2" size={20} />
+                  Live Blood Map
+                </Button>
+              </Link>
               <Link to="/user/signup">
                 <Button
                   size="lg"
@@ -167,6 +200,38 @@ export const Landing = () => {
                   Login as User
                 </Button>
               </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Life-Saving Impact Tracker Section */}
+      <div className="bg-red-50 dark:bg-red-900/10 py-16 border-y border-red-100 dark:border-red-900/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-wider mb-2">Platform Impact</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">Live statistics on how our community is saving lives.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border px-4 flex flex-col items-center justify-center text-center">
+              <Droplet className="w-10 h-10 text-red-500 mb-3" />
+              <p className="text-4xl font-extrabold text-gray-900 dark:text-white mb-1">{impactStats.totalDonations}</p>
+              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Total Donations</p>
+            </div>
+            <div className="bg-gradient-to-br from-red-600 to-rose-700 p-6 rounded-2xl shadow-md border-red-500 px-4 flex flex-col items-center justify-center text-center transform hover:-translate-y-1 transition duration-300">
+              <Heart className="w-10 h-10 text-white mb-3" />
+              <p className="text-4xl font-extrabold text-white mb-1">{impactStats.livesSaved}</p>
+              <p className="text-sm font-semibold text-red-100 uppercase tracking-wide">Est. Lives Saved</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border px-4 flex flex-col items-center justify-center text-center">
+              <Users className="w-10 h-10 text-blue-500 mb-3" />
+              <p className="text-4xl font-extrabold text-gray-900 dark:text-white mb-1">{impactStats.activeDonors}</p>
+              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Active Donors</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border px-4 flex flex-col items-center justify-center text-center">
+              <Activity className="w-10 h-10 text-green-500 mb-3" />
+              <p className="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">{impactStats.emergencyRequestsSolved}%</p>
+              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Emergencies Solved</p>
             </div>
           </div>
         </div>

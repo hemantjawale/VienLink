@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { PublicAuthProvider } from './context/PublicAuthContext';
+import { PublicAuthProvider, usePublicAuth } from './context/PublicAuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { MainLayout } from './components/Layout/MainLayout';
 import { ChatbotWidget } from './components/Chatbot/ChatbotWidget';
@@ -34,6 +34,11 @@ import { DonationSlots } from './pages/DonationSlots';
 import { ProfileSettings } from './pages/ProfileSettings';
 import { UpdatePassword } from './pages/UpdatePassword';
 import { NotificationSettings } from './pages/NotificationSettings';
+import { EmergencyBroadcast } from './pages/EmergencyBroadcast';
+import { EmergencyBroadcastAdmin } from './pages/EmergencyBroadcastAdmin';
+import { DonorDashboard } from './pages/DonorDashboard';
+import { HospitalQRScanner } from './pages/HospitalQRScanner';
+import { LiveMap } from './pages/LiveMap';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -49,6 +54,20 @@ const PrivateRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" replace />;
 };
 
+const PublicPrivateRoute = ({ children }) => {
+  const { user, loading } = usePublicAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
+
+  return user ? children : <Navigate to="/user/login" replace />;
+};
+
 function AppRoutes() {
   const { user } = useAuth();
 
@@ -60,11 +79,16 @@ function AppRoutes() {
       {/* Public user auth */}
       <Route path="/user/signup" element={<UserSignup />} />
       <Route path="/user/login" element={<UserLogin />} />
-      <Route path="/user/dashboard" element={<UserDashboard />} />
-      <Route path="/user/profile" element={<UserProfile />} />
-      <Route path="/user/request-blood" element={<PublicRequestBlood />} />
-      <Route path="/user/appointments" element={<PublicAppointments />} />
-      <Route path="/user/camps" element={<PublicCamps />} />
+      <Route path="/user/emergency" element={<EmergencyBroadcast />} />
+      <Route path="/live-map" element={<LiveMap />} />
+
+      {/* Protected public user routes */}
+      <Route path="/user/dashboard" element={<PublicPrivateRoute><UserDashboard /></PublicPrivateRoute>} />
+      <Route path="/user/profile" element={<PublicPrivateRoute><UserProfile /></PublicPrivateRoute>} />
+      <Route path="/user/request-blood" element={<PublicPrivateRoute><PublicRequestBlood /></PublicPrivateRoute>} />
+      <Route path="/user/appointments" element={<PublicPrivateRoute><PublicAppointments /></PublicPrivateRoute>} />
+      <Route path="/user/camps" element={<PublicPrivateRoute><PublicCamps /></PublicPrivateRoute>} />
+      <Route path="/user/donor-dashboard" element={<PublicPrivateRoute><DonorDashboard /></PublicPrivateRoute>} />
       <Route
         path="/app"
         element={
@@ -131,6 +155,16 @@ function AppRoutes() {
           <PrivateRoute>
             <MainLayout>
               <InterHospitalRequests />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/qr-scanner"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <HospitalQRScanner />
             </MainLayout>
           </PrivateRoute>
         }
@@ -205,6 +239,16 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route
+        path="/emergency-dashboard"
+        element={
+          <PrivateRoute>
+            <MainLayout>
+              <EmergencyBroadcastAdmin />
+            </MainLayout>
+          </PrivateRoute>
+        }
+      />
     </Routes>
   );
 }
@@ -218,7 +262,7 @@ function App() {
             <AppRoutes />
             <ChatbotWidget />
             <NotificationToast />
-            <Toaster 
+            <Toaster
               position="top-right"
               toastOptions={{
                 className: 'dark:bg-gray-800 dark:text-white',

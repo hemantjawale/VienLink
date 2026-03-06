@@ -26,7 +26,9 @@ publicApi.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('publicToken');
       localStorage.removeItem('publicUser');
-      if (!window.location.pathname.startsWith('/user/')) {
+
+      const path = window.location.pathname;
+      if (path !== '/user/login' && path !== '/user/signup' && path !== '/user/emergency') {
         window.location.href = '/user/login';
       }
     }

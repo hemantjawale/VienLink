@@ -23,6 +23,25 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- Google Translate for Multi-Language Support -->
+    <div id="google_translate_element" style="position:fixed; bottom:20px; left:20px; z-index:9999;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,hi,mr,gu,ta,te,kn,ml,pa,bn', // Adding regional Indian languages + English
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+      /* Clean up Google Translate UI slightly */
+      .goog-te-gadget-simple { background-color: #fff; border: 1px solid #ccc; padding: 4px; border-radius: 8px; font-family: 'Inter', sans-serif;}
+      .goog-te-banner-frame { display: none !important; }
+      body { top: 0 !important; }
+    </style>
   </body>
 </html>
 

@@ -5,8 +5,45 @@ import Donor from '../models/Donor.model.js';
 import BloodCamp from '../models/BloodCamp.model.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { predictStockLevel } from '../utils/stockPrediction.js';
+import PublicUser from '../models/PublicUser.model.js';
 
 const router = express.Router();
+
+// @route   GET /api/analytics/public-impact
+// @desc    Get public impact statistics
+// @access  Public
+router.get('/public-impact', async (req, res, next) => {
+  try {
+    const totalDonations = await BloodUnit.countDocuments();
+    const livesSaved = totalDonations * 3;
+
+    // Active donors (PublicUsers with role 'donor')
+    const activeDonors = await PublicUser.countDocuments({ role: 'donor', isActive: true });
+
+    // Emergency requests solved percentage
+    const emergencyRequests = await BloodRequest.countDocuments({ urgency: 'emergency' });
+    const solvedEmergencyRequests = await BloodRequest.countDocuments({
+      urgency: 'emergency',
+      status: { $in: ['approved', 'completed'] }
+    });
+
+    const emergencyRequestsSolved = emergencyRequests > 0
+      ? Math.round((solvedEmergencyRequests / emergencyRequests) * 100)
+      : 100;
+
+    res.json({
+      success: true,
+      data: {
+        totalDonations,
+        livesSaved,
+        activeDonors,
+        emergencyRequestsSolved
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.use(protect);
 
@@ -16,7 +53,7 @@ router.use(protect);
 router.get('/dashboard', authorize('hospital_admin', 'staff', 'super_admin'), async (req, res, next) => {
   try {
     const filter = {};
-    
+
     if (req.user.role !== 'super_admin') {
       filter.hospitalId = req.user.hospitalId;
     }
@@ -137,13 +174,38 @@ router.get('/stock-prediction/:bloodGroup', authorize('hospital_admin', 'staff')
   }
 });
 
+// @route   GET /api/analytics/stock-predictions/all
+// @desc    Get stock prediction for all blood groups
+// @access  Private
+router.get('/stock-predictions/all', authorize('hospital_admin', 'staff'), async (req, res, next) => {
+  try {
+    const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+    const predictions = await Promise.all(
+      bloodGroups.map(async (bg) => {
+        const p = await predictStockLevel(BloodUnit, bg, req.user.hospitalId);
+        return { bloodGroup: bg, ...p };
+      })
+    );
+
+    // Filter to only those with critical or high risk, or low stock predicted
+    const insights = predictions.filter(p => p.daysUntilLowStock !== null || p.riskLevel !== 'low');
+
+    res.json({
+      success: true,
+      data: insights.sort((a, b) => (a.daysUntilLowStock || 999) - (b.daysUntilLowStock || 999)),
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // @route   GET /api/analytics/camp/:campId
 // @desc    Get blood camp analytics
 // @access  Private
 router.get('/camp/:campId', authorize('hospital_admin', 'staff'), async (req, res, next) => {
   try {
     const filter = { _id: req.params.campId };
-    
+
     if (req.user.role !== 'super_admin') {
       filter.hospitalId = req.user.hospitalId;
     }

@@ -19,20 +19,20 @@ export const initializeSocket = (server) => {
   io.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth.token;
-      
+
       if (!token) {
         return next(new Error('Authentication token required'));
       }
 
       // Verify JWT token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
+
       // Find user (could be regular user or public user)
       let user = await User.findById(decoded.id).select('-password');
       if (!user) {
         user = await PublicUser.findById(decoded.id);
       }
-      
+
       if (!user) {
         return next(new Error('User not found'));
       }
@@ -48,10 +48,10 @@ export const initializeSocket = (server) => {
   // Handle connections
   io.on('connection', (socket) => {
     console.log(`🔌 User connected: ${socket.user.email} (${socket.userType})`);
-    
+
     // Join user to their personal room
     socket.join(`user_${socket.user._id}`);
-    
+
     // Join hospital room if hospital user
     if (socket.userType === 'hospital' && socket.user.hospitalId) {
       socket.join(`hospital_${socket.user.hospitalId}`);
@@ -60,7 +60,7 @@ export const initializeSocket = (server) => {
 
     // Join role-based room for broadcasts
     socket.join(`role_${socket.user.role}`);
-    
+
     // Handle joining specific rooms
     socket.on('join_room', (roomName) => {
       socket.join(roomName);
@@ -100,6 +100,18 @@ export const initializeSocket = (server) => {
         userId: socket.user._id,
         room: data.room
       });
+    });
+
+    // ---- Emergency Broadcast Events ----
+    // Donors join the emergency broadcast room for receiving alerts
+    socket.on('join_emergency_room', () => {
+      socket.join('emergency_broadcast');
+      console.log(`🚨 ${socket.user.email} joined emergency broadcast room`);
+    });
+
+    socket.on('leave_emergency_room', () => {
+      socket.leave('emergency_broadcast');
+      console.log(`🚨 ${socket.user.email} left emergency broadcast room`);
     });
 
     // Handle disconnection
@@ -198,7 +210,7 @@ export const sendLowStockAlert = (hospitalId, bloodGroup, currentStock, threshol
   };
 
   sendNotificationToHospital(hospitalId, notification);
-  
+
   // Also notify super admins
   sendNotificationToRole('super_admin', {
     ...notification,
@@ -221,13 +233,13 @@ export const sendCriticalStockAlert = (hospitalId, bloodGroup, currentStock) => 
   };
 
   sendNotificationToHospital(hospitalId, notification);
-  
+
   // Broadcast to all hospitals for potential transfers
   sendNotificationToRole('hospital_admin', {
     ...notification,
     message: `Critical stock alert at partner hospital: ${notification.message}`
   });
-  
+
   // Also notify super admins
   sendNotificationToRole('super_admin', notification);
 };

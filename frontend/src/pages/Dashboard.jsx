@@ -30,7 +30,7 @@
 //     try {
 //       const response = await api.get('/analytics/dashboard');
 //       setStats(response.data.data);
-      
+
 //       // Transform data for charts
 //       if (response.data.data?.inventorySummary) {
 //         // Prepare blood group distribution data
@@ -39,7 +39,7 @@
 //           available: item.available,
 //           total: item.total
 //         }));
-        
+
 //         // Prepare inventory trends data (example with dummy data - replace with actual API data)
 //         const inventoryTrends = [
 //           { date: 'Jan', A: 45, B: 35, AB: 25, O: 40 },
@@ -49,7 +49,7 @@
 //           { date: 'May', A: 58, B: 45, AB: 35, O: 50 },
 //           { date: 'Jun', A: 62, B: 48, AB: 38, O: 55 }
 //         ];
-        
+
 //         setChartData({ inventoryTrends, bloodGroupData });
 //       }
 //     } catch (error) {
@@ -58,7 +58,7 @@
 //       setLoading(false);
 //     }
 //   };
-  
+
 //   const handleRefresh = () => {
 //     setLoading(true);
 //     fetchDashboardData();
@@ -338,7 +338,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Droplet, Users, FileText, Calendar, TrendingUp, AlertCircle, Building2, ArrowRight, RefreshCw } from 'lucide-react';
+import { Droplet, Users, FileText, Calendar, TrendingUp, AlertCircle, Building2, ArrowRight, RefreshCw, Zap, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
@@ -346,8 +346,10 @@ export const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
+  const [predictions, setPredictions] = useState([]);
   const [pendingHospitals, setPendingHospitals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [panicLoading, setPanicLoading] = useState(false);
   const [chartData, setChartData] = useState({
     inventoryTrends: [],
     bloodGroupData: []
@@ -365,7 +367,7 @@ export const Dashboard = () => {
       const response = await api.get('/analytics/dashboard');
       const data = response.data.data;
       setStats(data);
-      
+
       if (data?.inventorySummary) {
         // Prepare blood group distribution data
         const bloodGroupData = data.inventorySummary.map(item => ({
@@ -377,28 +379,39 @@ export const Dashboard = () => {
         // Prepare inventory trends data (last 6 months)
         const currentDate = new Date();
         const months = [];
-        
+
         // Get month names for the last 6 months
         for (let i = 5; i >= 0; i--) {
           const date = new Date();
           date.setMonth(currentDate.getMonth() - i);
           const monthData = { date: date.toLocaleString('default', { month: 'short' }) };
-          
+
           // Initialize data for each blood group
           data.inventorySummary.forEach(item => {
             // Calculate a value based on available units (this is a placeholder)
             // In a real app, you'd get this from your historical data
             monthData[item._id] = Math.floor(item.available * (0.7 + Math.random() * 0.6));
           });
-          
+
           months.push(monthData);
         }
 
-        setChartData({ 
+        setChartData({
           inventoryTrends: months,
-          bloodGroupData 
+          bloodGroupData
         });
       }
+
+      // Fetch Predictions
+      try {
+        const predRes = await api.get('/analytics/stock-predictions/all');
+        if (predRes.data.success) {
+          setPredictions(predRes.data.data);
+        }
+      } catch (err) {
+        // fail silently for predictions
+      }
+
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
@@ -429,6 +442,25 @@ export const Dashboard = () => {
       fetchDashboardData();
     } catch (error) {
       console.error('Failed to approve hospital:', error);
+    }
+  };
+
+  const handlePanic = async () => {
+    if (!window.confirm('🚨 WARNING: This will immediately broadcast an emergency alert to ALL nearby donors. Are you sure you want to proceed?')) {
+      return;
+    }
+
+    setPanicLoading(true);
+    try {
+      const response = await api.post('/panic');
+      toast.success(response.data.message || 'Panic broadcast initiated!', {
+        icon: '🚨',
+        duration: 5000,
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to initiate panic broadcast');
+    } finally {
+      setPanicLoading(false);
     }
   };
 
@@ -480,17 +512,75 @@ export const Dashboard = () => {
             Welcome back, {user?.firstName}! Here's what's happening today.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={loading}
-          className="flex items-center gap-2"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-3">
+          {(user?.role === 'hospital_admin' || user?.role === 'staff') && (
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={handlePanic}
+              disabled={panicLoading}
+              className={`flex items-center gap-2 font-bold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 transition-shadow ${panicLoading ? 'animate-pulse' : ''
+                }`}
+            >
+              <Zap className={`w-4 h-4 ${panicLoading ? 'animate-bounce' : ''}`} />
+              {panicLoading ? 'Broadcasting...' : 'PANIC BUTTON'}
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={loading}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
+
+      {/* Actionable Insights / Quick Stats */}
+      {
+        predictions && predictions.length > 0 && (
+          <Card className="border-indigo-200 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-900/20">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-indigo-500 text-white rounded-xl shadow-md border border-indigo-400">
+                  <Sparkles size={24} className="animate-pulse" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-300">
+                    AI Smart Inventory Predictions
+                  </h3>
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {predictions.slice(0, 3).map((pred, i) => (
+                      <div
+                        key={i}
+                        className={`p-3 rounded-lg border ${pred.riskLevel === 'critical' ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800' :
+                          pred.riskLevel === 'high' ? 'bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800' :
+                            'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800'
+                          }`}
+                      >
+                        <div className="flex justify-between items-center mb-1">
+                          <span className={`font-black text-lg ${pred.riskLevel === 'critical' ? 'text-red-700' :
+                            pred.riskLevel === 'high' ? 'text-orange-700' : 'text-yellow-700'
+                            }`}>{pred.bloodGroup}</span>
+                          <span className="text-xs uppercase font-bold text-gray-500">
+                            {pred.daysUntilLowStock ? `${pred.daysUntilLowStock} days left` : 'Low Request'}
+                          </span>
+                        </div>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {pred.prediction}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      }
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -526,14 +616,14 @@ export const Dashboard = () => {
                   const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#06b6d4', '#a855f7', '#ec4899'];
                   const color = colors[index % colors.length];
                   return (
-                    <Area 
+                    <Area
                       key={group.name}
-                      type="monotone" 
-                      dataKey={group.name} 
-                      stroke={color} 
-                      fillOpacity={0.2} 
+                      type="monotone"
+                      dataKey={group.name}
+                      stroke={color}
+                      fillOpacity={0.2}
                       strokeWidth={2}
-                      fill={`url(#color${index})`} 
+                      fill={`url(#color${index})`}
                     />
                   );
                 })}
@@ -583,80 +673,84 @@ export const Dashboard = () => {
       </div>
 
       {/* Blood Group Inventory */}
-      {stats?.inventorySummary && stats.inventorySummary.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Blood Inventory by Group</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              {stats.inventorySummary.map((item) => (
-                <div
-                  key={item._id}
-                  className="p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
-                >
-                  <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{item._id}</p>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">
-                    Available: <span className="font-medium text-gray-900 dark:text-white">{item.available}</span>
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                    Total: <span className="font-medium text-gray-900 dark:text-white">{item.total}</span>
-                  </p>
-                  {item.expiringSoon > 0 && (
-                    <p className="text-xs text-orange-600 dark:text-orange-400 mt-2 flex items-center gap-1">
-                      <AlertCircle size={12} sm:size={14} />
-                      {item.expiringSoon} expiring soon
+      {
+        stats?.inventorySummary && stats.inventorySummary.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Blood Inventory by Group</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                {stats.inventorySummary.map((item) => (
+                  <div
+                    key={item._id}
+                    className="p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
+                  >
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{item._id}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      Available: <span className="font-medium text-gray-900 dark:text-white">{item.available}</span>
                     </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                      Total: <span className="font-medium text-gray-900 dark:text-white">{item.total}</span>
+                    </p>
+                    {item.expiringSoon > 0 && (
+                      <p className="text-xs text-orange-600 dark:text-orange-400 mt-2 flex items-center gap-1">
+                        <AlertCircle size={12} sm:size={14} />
+                        {item.expiringSoon} expiring soon
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )
+      }
 
       {/* Pending Hospitals Section */}
-      {user?.role === 'super_admin' && pendingHospitals.length > 0 && (
-        <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-orange-100">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4 flex-1">
-                <div className="p-3 bg-orange-500 rounded-lg">
-                  <AlertCircle className="text-white" size={24} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-orange-900 mb-1">
-                    {pendingHospitals.length} {pendingHospitals.length === 1 ? 'Hospital' : 'Hospitals'} Pending Approval
-                  </h3>
-                  <div className="space-y-2 mt-4">
-                    {pendingHospitals.slice(0, 3).map((hospital) => (
-                      <div
-                        key={hospital._id}
-                        className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Building2 className="text-orange-600 dark:text-orange-400" size={20} />
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{hospital.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{hospital.email}</p>
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleApprove(hospital._id)}
+      {
+        user?.role === 'super_admin' && pendingHospitals.length > 0 && (
+          <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-orange-100">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4 flex-1">
+                  <div className="p-3 bg-orange-500 rounded-lg">
+                    <AlertCircle className="text-white" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-orange-900 mb-1">
+                      {pendingHospitals.length} {pendingHospitals.length === 1 ? 'Hospital' : 'Hospitals'} Pending Approval
+                    </h3>
+                    <div className="space-y-2 mt-4">
+                      {pendingHospitals.slice(0, 3).map((hospital) => (
+                        <div
+                          key={hospital._id}
+                          className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
                         >
-                          Approve
-                        </Button>
-                      </div>
-                    ))}
+                          <div className="flex items-center gap-3">
+                            <Building2 className="text-orange-600 dark:text-orange-400" size={20} />
+                            <div>
+                              <p className="font-medium text-gray-900 dark:text-white">{hospital.name}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">{hospital.email}</p>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleApprove(hospital._id)}
+                          >
+                            Approve
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            </CardContent>
+          </Card>
+        )
+      }
+    </div >
   );
 };

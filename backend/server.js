@@ -33,13 +33,13 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
-  
+
   // Handle preflight
   if (req.method === 'OPTIONS') {
     res.status(200).send();
     return;
   }
-  
+
   next();
 });
 
@@ -98,6 +98,11 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import auditRoutes from './routes/audit.routes.js';
 import chatbotRoutes from './routes/chatbot.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
+import emergencyBroadcastRoutes from './routes/emergencyBroadcast.routes.js';
+import donorProfileRoutes from './routes/donorProfile.routes.js';
+import donorQRRoutes from './routes/donorQR.routes.js';
+import panicButtonRoutes from './routes/panicButton.routes.js';
+import { startDonorReminderCron } from './utils/donorReminder.js';
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -117,6 +122,13 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/emergency-broadcast', emergencyBroadcastRoutes);
+app.use('/api/donor-profile', donorProfileRoutes);
+app.use('/api/donor-qr', donorQRRoutes);
+app.use('/api/panic', panicButtonRoutes);
+
+// Start cron jobs
+startDonorReminderCron();
 
 // -------------------- Health Checks --------------------
 app.get("/", (req, res) => {
@@ -129,8 +141,8 @@ app.get("/api/health", (req, res) => {
 
 // Test CORS endpoint
 app.get("/api/test-cors", (req, res) => {
-  res.json({ 
-    status: "OK", 
+  res.json({
+    status: "OK",
     message: "CORS test successful",
     origin: req.headers.origin,
     timestamp: new Date().toISOString()

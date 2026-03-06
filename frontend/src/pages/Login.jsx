@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { CardHeader, CardTitle, CardContent } from '../components/ui/Card';
-import { Droplet, Moon, Sun } from 'lucide-react';
+import { Droplet, Moon, Sun, Activity } from 'lucide-react';
 import Spline from '@splinetool/react-spline';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
@@ -46,13 +46,13 @@ export const Login = () => {
     e.preventDefault();
     try {
       const response = await api.post('/auth/forgot-password', { email: resetEmail || email });
-      
+
       if (response.data.verificationCode) {
         toast.success(`Verification code: ${response.data.verificationCode}`);
       } else {
         toast.success('Verification code generated');
       }
-      
+
       setResetStep(2);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to generate verification code');
@@ -84,10 +84,10 @@ export const Login = () => {
       <div className="absolute inset-0 w-full h-full z-0">
         <Spline scene="https://prod.spline.design/H3KNk3yz8XLS22If/scene.splinecode" />
       </div>
-      
+
       {/* Overlay Gradient (very subtle, so spline stays visible) */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/5 to-transparent z-10"></div>
-      
+
       {/* Dark Mode Toggle */}
       <div className="fixed top-4 right-4 z-50">
         <button
@@ -103,7 +103,7 @@ export const Login = () => {
           {darkMode ? <Sun className="text-yellow-400" size={20} /> : <Moon className="text-white" size={20} />}
         </button>
       </div>
-      
+
       {/* Content - In front */}
       <div className="relative z-20 min-h-screen flex items-center justify-center p-4">
         <div className="w-full max-w-md">
@@ -179,6 +179,33 @@ export const Login = () => {
                     Register as Donor
                   </Link>
                 </p>
+              </div>
+
+              {/* AI ICU Telemetry Monitoring */}
+              <div className="mt-5 pt-5 border-t border-white/10">
+                <a
+                  href="https://ai-icu.onrender.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block w-full p-3 rounded-xl bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 border border-cyan-400/20 hover:border-cyan-400/40 hover:from-cyan-500/20 hover:to-emerald-500/20 transition-all duration-300 backdrop-blur-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                        <Activity className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-black/50 animate-pulse" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors">
+                        AI ICU Telemetry Monitoring
+                      </p>
+                      <p className="text-[11px] text-gray-400 group-hover:text-gray-300 transition-colors">
+                        Real-time AI-powered patient monitoring system →
+                      </p>
+                    </div>
+                  </div>
+                </a>
               </div>
             </CardContent>
           </div>

@@ -33,30 +33,30 @@ router.post(
           errors: errors.array(),
         });
 
-// @route   GET /api/hospitals/approved-list
-// @desc    Get list of approved hospitals for inter-hospital requests
-// @access  Private (Hospital Admin, Staff, Super Admin)
-router.get('/approved-list', authorize('super_admin', 'hospital_admin', 'staff'), async (req, res, next) => {
-  try {
-    const filter = { isApproved: true };
+        // @route   GET /api/hospitals/approved-list
+        // @desc    Get list of approved hospitals for inter-hospital requests
+        // @access  Private (Hospital Admin, Staff, Super Admin)
+        router.get('/approved-list', authorize('super_admin', 'hospital_admin', 'staff'), async (req, res, next) => {
+          try {
+            const filter = { isApproved: true };
 
-    // Normal hospitals should not see themselves as targets
-    const hospitals = await Hospital.find(filter)
-      .select('name email status')
-      .sort({ name: 1 });
+            // Normal hospitals should not see themselves as targets
+            const hospitals = await Hospital.find(filter)
+              .select('name email status')
+              .sort({ name: 1 });
 
-    const filtered = req.user.hospitalId
-      ? hospitals.filter((h) => h._id.toString() !== req.user.hospitalId.toString())
-      : hospitals;
+            const filtered = req.user.hospitalId
+              ? hospitals.filter((h) => h._id.toString() !== req.user.hospitalId.toString())
+              : hospitals;
 
-    res.json({
-      success: true,
-      data: filtered,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+            res.json({
+              success: true,
+              data: filtered,
+            });
+          } catch (error) {
+            next(error);
+          }
+        });
       }
 
       const {
@@ -176,7 +176,7 @@ router.get('/approved-list', authorize('super_admin', 'hospital_admin', 'staff')
           message: error.message,
         });
       }
-      
+
       console.error('Registration error:', error);
       next(error);
     }
@@ -424,9 +424,9 @@ router.put('/:id', authorize('super_admin', 'hospital_admin'), async (req, res, 
 // @route   PUT /api/hospitals/:id/certificate
 // @desc    Update hospital certificate
 // @access  Private (Hospital Admin, Super Admin)
-router.put('/:id/certificate', 
-  authorize('super_admin', 'hospital_admin'), 
-  uploadCertificate, 
+router.put('/:id/certificate',
+  authorize('super_admin', 'hospital_admin'),
+  uploadCertificate,
   async (req, res, next) => {
     try {
       const filter = { _id: req.params.id };
@@ -522,6 +522,57 @@ router.delete('/:id', authorize('super_admin'), async (req, res, next) => {
       success: true,
       message: 'Hospital deleted successfully',
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   PUT /api/hospitals/:id/like
+// @desc    Toggle like/unlike a hospital
+// @access  Private
+router.put('/:id/like', async (req, res, next) => {
+  try {
+    const hospital = await Hospital.findById(req.params.id);
+    if (!hospital) {
+      return res.status(404).json({ success: false, message: 'Hospital not found' });
+    }
+
+    const userId = req.user._id;
+    const alreadyLiked = hospital.likes.some(
+      (id) => id.toString() === userId.toString()
+    );
+
+    if (alreadyLiked) {
+      // Unlike
+      hospital.likes = hospital.likes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
+      hospital.likesCount = Math.max(0, hospital.likes.length);
+      await hospital.save();
+
+      res.json({
+        success: true,
+        message: 'Hospital unliked',
+        data: {
+          liked: false,
+          likesCount: hospital.likesCount,
+        },
+      });
+    } else {
+      // Like
+      hospital.likes.push(userId);
+      hospital.likesCount = hospital.likes.length;
+      await hospital.save();
+
+      res.json({
+        success: true,
+        message: 'Hospital liked',
+        data: {
+          liked: true,
+          likesCount: hospital.likesCount,
+        },
+      });
+    }
   } catch (error) {
     next(error);
   }

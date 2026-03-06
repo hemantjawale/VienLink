@@ -13,6 +13,8 @@ import {
   Menu,
   X,
   ArrowRightLeft,
+  Zap,
+  ScanLine,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
@@ -22,6 +24,7 @@ const menuItems = {
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/hospitals', label: 'Hospitals', icon: Building2 },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+    { path: '/emergency-dashboard', label: 'Emergency Broadcast', icon: Zap },
   ],
   hospital_admin: [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -32,7 +35,9 @@ const menuItems = {
     { path: '/blood-camps', label: 'Blood Camps', icon: Calendar },
     { path: '/donation-slots', label: 'Donation Slots', icon: Calendar },
     { path: '/staff', label: 'Staff', icon: UserCog },
+    { path: '/qr-scanner', label: 'Donor QR Scanner', icon: ScanLine },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+    { path: '/emergency-dashboard', label: 'Emergency Broadcast', icon: Zap },
   ],
   staff: [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -42,6 +47,8 @@ const menuItems = {
     { path: '/inter-hospital-requests', label: 'Inter-Hospital Requests', icon: ArrowRightLeft },
     { path: '/blood-camps', label: 'Blood Camps', icon: Calendar },
     { path: '/donation-slots', label: 'Donation Slots', icon: Calendar },
+    { path: '/qr-scanner', label: 'Donor QR Scanner', icon: ScanLine },
+    { path: '/emergency-dashboard', label: 'Emergency Broadcast', icon: Zap },
   ],
 };
 
@@ -116,10 +123,9 @@ export const Sidebar = () => {
                   className={`
                     flex items-center justify-between gap-3 px-4 py-3 rounded-lg
                     transition-colors duration-200
-                    ${
-                      isActive
-                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-medium'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    ${isActive
+                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-medium'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                     }
                   `}
                 >
