@@ -35,7 +35,15 @@ export const EmergencyBroadcast = () => {
     const { user } = usePublicAuth();
     const [step, setStep] = useState('form'); // form | searching | result
     const [bloodGroup, setBloodGroup] = useState('');
-    const [location, setLocation] = useState(null);
+    const [location, setLocation] = useState(() => {
+        if (user?.location?.coordinates) {
+            return {
+                longitude: user.location.coordinates[0],
+                latitude: user.location.coordinates[1]
+            };
+        }
+        return null;
+    });
     const [locationLoading, setLocationLoading] = useState(false);
     const [locationError, setLocationError] = useState('');
     const [notes, setNotes] = useState('');
@@ -81,27 +89,49 @@ export const EmergencyBroadcast = () => {
     }, [loadPastRequests]);
 
     // --- Detect location ---
-    const detectLocation = () => {
-        setLocationLoading(true);
-        setLocationError('');
+    const detectLocation = useCallback((isAuto = false) => {
+        if (!isAuto) setLocationLoading(true);
+        if (!isAuto) setLocationError('');
         if (!navigator.geolocation) {
-            setLocationError('Geolocation is not supported by your browser');
-            setLocationLoading(false);
+            if (!isAuto) setLocationError('Geolocation is not supported by your browser');
+            if (!isAuto) setLocationLoading(false);
             return;
         }
         navigator.geolocation.getCurrentPosition(
             (pos) => {
-                setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
-                setLocationLoading(false);
-                toast.success('Location detected successfully');
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                setLocation({ latitude: lat, longitude: lng });
+                if (!isAuto) setLocationLoading(false);
+                if (!isAuto) toast.success('Location detected successfully');
+
+                // Save to DB
+                publicApi.put('/public-auth/profile', {
+                    location: {
+                        type: 'Point',
+                        coordinates: [lng, lat]
+                    }
+                }).catch(err => console.error("Failed to save location", err));
             },
             (err) => {
-                setLocationError(`Location error: ${err.message}. Please enable location services.`);
-                setLocationLoading(false);
+                if (!isAuto) {
+                    if (user?.location?.coordinates) {
+                        toast.success('Using saved location from profile');
+                    } else {
+                        setLocationError(`Location error: ${err.message}. Please enable location services.`);
+                    }
+                    setLocationLoading(false);
+                }
             },
             { enableHighAccuracy: true, timeout: 15000 }
         );
-    };
+    }, [user]);
+
+    useEffect(() => {
+        if (!location) {
+            detectLocation(true);
+        }
+    }, [location, detectLocation]);
 
     // --- Auto-expand radius ---
     useEffect(() => {
@@ -371,7 +401,7 @@ export const EmergencyBroadcast = () => {
                                                     Lat: {location.latitude.toFixed(5)}, Lng: {location.longitude.toFixed(5)}
                                                 </p>
                                             </div>
-                                            <button type="button" onClick={detectLocation} className="ml-auto text-green-600 hover:text-green-800">
+                                            <button type="button" onClick={() => detectLocation(false)} className="ml-auto text-green-600 hover:text-green-800">
                                                 <RefreshCw className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -380,7 +410,7 @@ export const EmergencyBroadcast = () => {
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                onClick={detectLocation}
+                                                onClick={() => detectLocation(false)}
                                                 disabled={locationLoading}
                                                 className="w-full flex items-center justify-center gap-2"
                                             >

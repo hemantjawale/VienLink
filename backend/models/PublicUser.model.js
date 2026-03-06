@@ -58,6 +58,15 @@ const publicUserSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    location: {
+      type: {
+        type: String,
+        enum: ['Point'],
+      },
+      coordinates: {
+        type: [Number],
+      },
+    },
     badges: [badgeSchema],
     lastLogin: Date,
     isActive: {
@@ -79,5 +88,8 @@ publicUserSchema.pre('save', async function (next) {
 publicUserSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
+
+publicUserSchema.index({ location: '2dsphere' });
+
 
 export default mongoose.model('PublicUser', publicUserSchema);

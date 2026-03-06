@@ -44,6 +44,7 @@ router.post(
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          location: user.location,
         },
       });
     } catch (error) {
@@ -151,6 +152,7 @@ router.post(
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          location: user.location,
         },
       });
     } catch (error) {
@@ -171,7 +173,7 @@ router.get('/me', protectPublic, async (req, res, next) => {
 // Update profile
 router.put('/profile', protectPublic, async (req, res, next) => {
   try {
-    const updatable = ['firstName', 'lastName', 'phone', 'city', 'pinCode', 'hasUnderlyingDisease', 'diseaseDetails', 'onMedication', 'medicationDetails', 'bloodGroup'];
+    const updatable = ['firstName', 'lastName', 'phone', 'city', 'pinCode', 'hasUnderlyingDisease', 'diseaseDetails', 'onMedication', 'medicationDetails', 'bloodGroup', 'location'];
 
     updatable.forEach((field) => {
       if (req.body[field] !== undefined) {
@@ -222,7 +224,7 @@ router.post('/logout', protectPublic, async (req, res, next) => {
     // 1. Add the token to a blacklist
     // 2. Update user's last logout time
     // 3. Clear any server-side session data
-    
+
     // For now, just return success - client handles token removal
     res.json({ success: true, message: 'Logged out successfully' });
   } catch (error) {
