@@ -25,22 +25,106 @@
     <script type="module" src="/src/main.jsx"></script>
     
     <!-- Google Translate for Multi-Language Support -->
-    <div id="google_translate_element" style="position:fixed; bottom:20px; left:20px; z-index:9999;"></div>
+    <div id="google_translate_element" class="language-selector-container"></div>
+    
     <script type="text/javascript">
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
           pageLanguage: 'en',
-          includedLanguages: 'en,hi,mr,gu,ta,te,kn,ml,pa,bn', // Adding regional Indian languages + English
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+          includedLanguages: 'en,hi,mr,gu,ta,te,kn,ml,pa,bn',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false
         }, 'google_translate_element');
       }
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <style>
-      /* Clean up Google Translate UI slightly */
-      .goog-te-gadget-simple { background-color: #fff; border: 1px solid #ccc; padding: 4px; border-radius: 8px; font-family: 'Inter', sans-serif;}
+      /* PREMIUM GOOGLE TRANSLATE STYLING */
+      .language-selector-container {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        z-index: 10000;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Base widget styling */
+      .goog-te-gadget-simple {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        padding: 10px 16px !important;
+        border-radius: 9999px !important;
+        font-family: 'Inter', system-ui, sans-serif !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+      }
+
+      /* Globe Icon using SVG mask or pseudo element */
+      .goog-te-gadget-simple::before {
+        content: "";
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background-color: #ef4444; /* Blood red color */
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='2' y1='12' x2='22' y2='12'/%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/%3E%3C/svg%3E") no-repeat center;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='2' y1='12' x2='22' y2='12'/%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/%3E%3C/svg%3E") no-repeat center;
+      }
+
+      /* Hover interaction */
+      .language-selector-container:hover .goog-te-gadget-simple {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        border-color: #f87171 !important;
+      }
+
+      /* Dark Mode Support */
+      .dark .goog-te-gadget-simple {
+        background-color: #1f2937 !important;
+        border-color: #374151 !important;
+        color: #f3f4f6 !important;
+      }
+
+      .dark .goog-te-gadget-simple::before {
+        background-color: #f87171;
+      }
+
+      /* Cleaning internals */
+      .goog-te-gadget-icon { display: none !important; }
+      .goog-te-menu-value { margin: 0 !important; padding: 0 !important; border: none !important; }
+      .goog-te-menu-value span { 
+        color: #4b5563 !important; 
+        font-weight: 600 !important;
+        font-size: 13px !important;
+        text-transform: capitalize !important;
+      }
+      .dark .goog-te-menu-value span { color: #d1d5db !important; }
+      .goog-te-menu-value img { display: none !important; }
+
+      /* Remove Google Branding */
+      .goog-te-gadget { font-size: 0 !important; color: transparent !important; }
+      .goog-te-gadget span { display: none !important; }
+      .goog-logo-link { display: none !important; }
+
+      /* Frame Styling */
       .goog-te-banner-frame { display: none !important; }
       body { top: 0 !important; }
+
+      /* Fix for iframe menu positioning */
+      iframe.goog-te-menu-frame {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 12px !important;
+        border: 1px solid #e2e8f0 !important;
+      }
+      .dark iframe.goog-te-menu-frame {
+        border-color: #374151 !important;
+        background-color: #111827 !important;
+      }
     </style>
   </body>
 </html>
