@@ -165,7 +165,7 @@
 //                     {pendingHospitals.slice(0, 3).map((hospital) => (
 //                       <div
 //                         key={hospital._id}
-//                         className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
+//                         className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
 //                       >
 //                         <div className="flex items-center gap-3">
 //                           <Building2 className="text-orange-600 dark:text-orange-400" size={20} />
@@ -231,7 +231,7 @@
 //             <CardTitle>Blood Inventory by Group</CardTitle>
 //           </CardHeader>
 //           <CardContent>
-//             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+//             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
 //               {stats.inventorySummary.map((item) => (
 //                 <div
 //                   key={item._id}
@@ -268,7 +268,7 @@
 //               {stats.recentRequests.map((request) => (
 //                 <div
 //                   key={request._id}
-//                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+//                   className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
 //                 >
 //                   <div>
 //                     <p className="font-medium text-gray-900 dark:text-white">
@@ -308,7 +308,7 @@
 //               {stats.upcomingCamps.map((camp) => (
 //                 <div
 //                   key={camp._id}
-//                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+//                   className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-gray-200 rounded-lg"
 //                 >
 //                   <div className="flex items-center gap-4">
 //                     <div className="p-3 bg-primary-50 rounded-lg">
@@ -504,22 +504,22 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">
             Welcome back, {user?.firstName}! Here's what's happening today.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           {(user?.role === 'hospital_admin' || user?.role === 'staff') && (
             <Button
               variant="danger"
               size="sm"
               onClick={handlePanic}
               disabled={panicLoading}
-              className={`flex items-center gap-2 font-bold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 transition-shadow ${panicLoading ? 'animate-pulse' : ''
+              className={`flex-1 sm:flex-none flex justify-center items-center gap-2 font-bold shadow-lg shadow-red-500/20 hover:shadow-red-500/40 transition-shadow ${panicLoading ? 'animate-pulse' : ''
                 }`}
             >
               <Zap className={`w-4 h-4 ${panicLoading ? 'animate-bounce' : ''}`} />
@@ -531,7 +531,7 @@ export const Dashboard = () => {
             size="sm"
             onClick={handleRefresh}
             disabled={loading}
-            className="flex items-center gap-2"
+            className="flex-1 sm:flex-none flex justify-center items-center gap-2"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
@@ -539,16 +539,38 @@ export const Dashboard = () => {
         </div>
       </div>
 
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {statCards.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={index}>
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">{stat.title}</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                  </div>
+                  <div className={`${stat.bgColor} p-3 rounded-lg flex-shrink-0`}>
+                    <Icon className={stat.color} size={24} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
       {/* Actionable Insights / Quick Stats */}
       {
         predictions && predictions.length > 0 && (
           <Card className="border-indigo-200 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-900/20">
             <CardContent className="p-4 sm:p-6">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-indigo-500 text-white rounded-xl shadow-md border border-indigo-400">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="p-3 bg-indigo-500 text-white rounded-xl shadow-md border border-indigo-400 flex-shrink-0">
                   <Sparkles size={24} className="animate-pulse" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-300">
                     AI Smart Inventory Predictions
                   </h3>
@@ -637,8 +659,8 @@ export const Dashboard = () => {
           <CardHeader>
             <CardTitle>Blood Stock by Group</CardTitle>
           </CardHeader>
-          <CardContent className="h-[calc(100%-80px)] flex items-center justify-center p-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 w-full max-w-2xl sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
+          <CardContent className="h-[calc(100%-80px)] flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 lg:gap-8 w-full max-w-2xl sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
               {chartData.bloodGroupData.map((group) => {
                 const total = group.total || 0;
                 const available = group.available || 0;
@@ -712,12 +734,12 @@ export const Dashboard = () => {
         user?.role === 'super_admin' && pendingHospitals.length > 0 && (
           <Card className="border-orange-200 bg-gradient-to-r from-orange-50 to-orange-100">
             <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4 flex-1">
-                  <div className="p-3 bg-orange-500 rounded-lg">
+              <div className="flex flex-col sm:flex-row items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-start gap-4 flex-1">
+                  <div className="p-3 bg-orange-500 rounded-lg flex-shrink-0">
                     <AlertCircle className="text-white" size={24} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 w-full">
                     <h3 className="text-lg font-semibold text-orange-900 mb-1">
                       {pendingHospitals.length} {pendingHospitals.length === 1 ? 'Hospital' : 'Hospitals'} Pending Approval
                     </h3>
@@ -725,7 +747,7 @@ export const Dashboard = () => {
                       {pendingHospitals.slice(0, 3).map((hospital) => (
                         <div
                           key={hospital._id}
-                          className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
+                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
                         >
                           <div className="flex items-center gap-3">
                             <Building2 className="text-orange-600 dark:text-orange-400" size={20} />

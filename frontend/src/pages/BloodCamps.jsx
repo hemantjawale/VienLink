@@ -107,12 +107,12 @@ export const BloodCamps = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Blood Camps</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-1">Organize and manage blood donation camps</p>
         </div>
-        <Button onClick={() => setShowModal(true)}>
+        <Button className="w-full sm:w-auto" onClick={() => setShowModal(true)}>
           <Plus size={20} />
           Create Camp
         </Button>
@@ -216,7 +216,7 @@ export const BloodCamps = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     label="Start Date"
                     type="datetime-local"

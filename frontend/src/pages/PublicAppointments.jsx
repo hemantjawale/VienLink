@@ -71,9 +71,9 @@ export const PublicAppointments = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex justify-center">
       <div className="w-full max-w-4xl space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Donation Appointments</h1>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Donation Appointments</h1>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
               View and manage your blood donation appointments.
             </p>

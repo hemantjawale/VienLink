@@ -109,8 +109,8 @@ export const BloodUnits = () => {
           <p className="text-gray-600 dark:text-gray-300 mt-1">Manage and track blood units in your hospital</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => setShowModal(true)}>
-            <Plus size={20} />
+          <Button className="w-full sm:w-auto" onClick={() => setShowModal(true)}>
+          <Plus size={20} />
             Add Blood Unit
           </Button>
           <Button

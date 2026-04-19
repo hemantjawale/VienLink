@@ -45,9 +45,9 @@ export const PublicCamps = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex justify-center">
       <div className="w-full max-w-5xl space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Nearby Blood Donation Camps</h1>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Nearby Blood Donation Camps</h1>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
               Find upcoming blood donation camps and reserve a time slot.
             </p>

@@ -115,7 +115,7 @@ export const InterHospitalRequests = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
             <ArrowRightLeft size={24} /> Inter-Hospital Requests
@@ -124,7 +124,7 @@ export const InterHospitalRequests = () => {
             Manage blood requests between hospitals
           </p>
         </div>
-        <Button onClick={() => setShowModal(true)}>
+        <Button className="w-full sm:w-auto" onClick={() => setShowModal(true)}>
           <Plus size={20} />
           New Request
         </Button>
@@ -159,7 +159,7 @@ export const InterHospitalRequests = () => {
           return (
             <Card key={req._id}>
               <CardContent className="p-6">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="space-y-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400">{directionLabel}</p>
                     <div className="flex items-center gap-3">
@@ -240,7 +240,7 @@ export const InterHospitalRequests = () => {
                   ]}
                   required
                 />
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Select
                     label="Blood Group"
                     value={formData.bloodGroup}

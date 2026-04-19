@@ -115,8 +115,8 @@ export const DonationSlots = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Donation Slots</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm">
@@ -183,24 +183,28 @@ export const DonationSlots = () => {
                 return (
                   <div
                     key={slot._id}
-                    className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
+                    className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
                   >
-                    <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-200">
-                      <Calendar size={16} />
-                      <span>{format(start, 'MMM dd, yyyy')}</span>
-                      <Clock size={16} />
-                      <span>
-                        {format(start, 'HH:mm')} - {format(end, 'HH:mm')}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <Users size={16} />
+                    <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-6 text-sm text-gray-700 dark:text-gray-200 w-full lg:w-auto">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} className="text-primary-600 flex-shrink-0" />
+                        <span className="font-medium">{format(start, 'MMM dd, yyyy')}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} className="text-blue-600 flex-shrink-0" />
                         <span className="font-medium">
+                          {format(start, 'HH:mm')} - {format(end, 'HH:mm')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 px-3 py-1.5 rounded-md border border-gray-100 dark:border-gray-700">
+                        <Users size={16} className="text-purple-600 flex-shrink-0" />
+                        <span className="font-bold text-gray-900 dark:text-white">
                           {slot.bookedCount || 0} / {slot.capacity}
                         </span>
-                        <span className="text-xs text-gray-500">({remaining} remaining)</span>
+                        <span className="text-xs text-gray-500 whitespace-nowrap">({remaining} left)</span>
                       </div>
                       {/* Visual capacity indicator */}
-                      <div className="flex items-center gap-2 ml-auto">
+                      <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto">
                         <div className="w-16 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div 
                             className={`h-full transition-all ${
@@ -218,7 +222,8 @@ export const DonationSlots = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
+                    
+                    <div className="flex flex-wrap items-center gap-2 text-sm w-full lg:w-auto mt-2 lg:mt-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-100 dark:border-gray-700">
                       <span
                         className={`ml-2 px-2 py-0.5 rounded-full text-xs font-semibold ${
                           slot.status === 'active'
@@ -277,15 +282,16 @@ export const DonationSlots = () => {
         >
           <Card className="w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl flex items-center gap-2">
-                <Users size={20} />
-                Appointments for {format(new Date(appointmentsModalSlot.startTime), 'MMM dd, yyyy')} •
-                {' '}
-                {format(new Date(appointmentsModalSlot.startTime), 'HH:mm')} -
-                {' '}
-                {format(new Date(appointmentsModalSlot.endTime), 'HH:mm')}
-                <span className="ml-auto text-sm font-normal text-gray-600 dark:text-gray-400">
-                  {slotAppointments.length} / {appointmentsModalSlot.capacity} slots booked
+              <CardTitle className="text-lg sm:text-xl flex flex-col sm:flex-row sm:items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <Users size={20} className="text-purple-600 flex-shrink-0" />
+                  <span>Appointments for {format(new Date(appointmentsModalSlot.startTime), 'MMM dd')}</span>
+                </div>
+                <div className="text-sm font-normal text-gray-500">
+                  {format(new Date(appointmentsModalSlot.startTime), 'HH:mm')} - {format(new Date(appointmentsModalSlot.endTime), 'HH:mm')}
+                </div>
+                <span className="sm:ml-auto mt-2 sm:mt-0 inline-flex px-3 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-full self-start sm:self-auto">
+                  {slotAppointments.length} / {appointmentsModalSlot.capacity} booked
                 </span>
               </CardTitle>
             </CardHeader>
@@ -299,7 +305,7 @@ export const DonationSlots = () => {
                   {/* Summary Statistics */}
                   <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg mb-4">
                     <h4 className="font-medium text-gray-900 dark:text-white mb-3">Appointment Summary</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{slotAppointments.length}</div>
                         <div className="text-gray-600 dark:text-gray-400">Total Booked</div>

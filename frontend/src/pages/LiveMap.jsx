@@ -131,7 +131,7 @@ export const LiveMap = () => {
                                     </h3>
                                     <p className="text-sm text-gray-600 mb-3 border-b pb-2">{selectedHospital.address}</p>
 
-                                    <div className="grid grid-cols-2 gap-4 mb-3">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
                                         <div className="bg-gray-50 p-2 rounded border border-gray-100 flex flex-col items-center">
                                             <Droplet size={20} className="text-red-500 mb-1" />
                                             <span className="text-xl font-bold">{selectedHospital.availableUnits}</span>

@@ -112,7 +112,7 @@ export const Staff = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Staff Management</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-1">Manage staff accounts</p>
@@ -222,7 +222,7 @@ export const Staff = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     label="First Name"
                     value={formData.firstName}

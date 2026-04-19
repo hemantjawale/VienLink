@@ -224,7 +224,7 @@ export const Donors = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Donors</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">Manage blood donors</p>
@@ -366,7 +366,7 @@ export const Donors = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     label="First Name"
                     value={formData.firstName}
@@ -381,7 +381,7 @@ export const Donors = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     label="Email"
                     type="email"
@@ -416,7 +416,7 @@ export const Donors = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <DatePicker
                     label="Date of Birth"
                     value={formData.dateOfBirth}
@@ -456,7 +456,7 @@ export const Donors = () => {
                     `}</style>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                       Gender <span className="text-danger-500">*</span>
@@ -527,7 +527,7 @@ export const Donors = () => {
                         })
                       }
                     />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Input
                         label="Postal Code"
                         type="text"
@@ -605,7 +605,7 @@ export const Donors = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3 text-sm">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-500 dark:text-gray-400">Name</p>
                     <p className="text-gray-900 dark:text-gray-100 font-medium">{viewDonor.firstName} {viewDonor.lastName}</p>
@@ -623,7 +623,7 @@ export const Donors = () => {
                     <p className="text-gray-900 dark:text-gray-100 font-medium">{viewDonor.phone}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-500 dark:text-gray-400">Date of Birth</p>
                     <p className="text-gray-900 dark:text-gray-100 font-medium">{viewDonor.dateOfBirth ? format(new Date(viewDonor.dateOfBirth), 'MMM dd, yyyy') : '-'}</p>
@@ -637,7 +637,7 @@ export const Donors = () => {
                   <p className="text-gray-500 dark:text-gray-400">Address</p>
                   <p className="text-gray-900 dark:text-gray-100 font-medium">{viewDonor.address?.street || '-'} {viewDonor.address?.zipCode ? `, ${viewDonor.address.zipCode}` : ''}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-gray-500 dark:text-gray-400">Weight</p>
                     <p className="text-gray-900 dark:text-gray-100 font-medium">

@@ -140,7 +140,7 @@ export const EmergencyBroadcastAdmin = () => {
 
             {/* Stats Cards */}
             {stats && (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     <Card className="!p-4 border-l-4 border-l-amber-500">
                         <div className="flex items-center gap-3">
                             <Activity className="w-8 h-8 text-amber-500" />
@@ -324,7 +324,7 @@ export const EmergencyBroadcastAdmin = () => {
                                 {expandedId === req._id && (
                                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
                                         {/* Metrics Row */}
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                                             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-center">
                                                 <p className="text-lg font-bold text-gray-900 dark:text-white">{req.totalDonorsNotified}</p>
                                                 <p className="text-xs text-gray-500">Donors Notified</p>

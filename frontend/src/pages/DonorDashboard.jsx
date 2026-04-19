@@ -151,7 +151,7 @@ export const DonorDashboard = () => {
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mt-6">
                             <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 text-center border border-white/10">
                                 <Droplet className="w-6 h-6 mx-auto mb-1 text-red-200" />
                                 <p className="text-3xl font-bold">{stats.totalDonations}</p>
@@ -371,7 +371,7 @@ export const DonorDashboard = () => {
                             )}
 
                             {/* Badge Grid */}
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {(showAllBadges ? badges : badges.slice(0, 4)).map((badge) => (
                                     <div
                                         key={badge.id}
@@ -461,7 +461,7 @@ export const DonorDashboard = () => {
                                     {(showHistory ? donationHistory : donationHistory.slice(0, 5)).map((d, i) => (
                                         <div
                                             key={d._id}
-                                            className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
+                                            className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors"
                                         >
                                             <div className="flex items-center gap-3">
                                                 <div

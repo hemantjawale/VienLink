@@ -756,7 +756,7 @@ export const EmergencyBroadcast = () => {
 
                                         {expandedPast === req._id && (
                                             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                                     <div>
                                                         <p className="text-gray-500 dark:text-gray-400 text-xs">Donors Notified</p>
                                                         <p className="font-semibold text-gray-900 dark:text-white">{req.totalDonorsNotified}</p>
