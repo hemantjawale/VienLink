@@ -6,6 +6,7 @@ import BloodCamp from '../models/BloodCamp.model.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { predictStockLevel } from '../utils/stockPrediction.js';
 import PublicUser from '../models/PublicUser.model.js';
+import Hospital from '../models/Hospital.model.js';
 
 const router = express.Router();
 
@@ -39,6 +40,59 @@ router.get('/public-impact', async (req, res, next) => {
         activeDonors,
         emergencyRequestsSolved
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @route   GET /api/analytics/live-map-data
+// @desc    Get live map data for hospitals
+// @access  Public
+router.get('/live-map-data', async (req, res, next) => {
+  try {
+    const hospitals = await Hospital.find({ isApproved: true });
+    const mapData = [];
+
+    for (const hospital of hospitals) {
+      // Get available units
+      const availableUnits = await BloodUnit.countDocuments({
+        hospitalId: hospital._id,
+        status: 'available'
+      });
+
+      // Get pending requests
+      const pendingRequests = await BloodRequest.countDocuments({
+        hospitalId: hospital._id,
+        status: 'pending'
+      });
+
+      let status = 'sufficient';
+      let color = '#22c55e'; // green
+
+      if (availableUnits === 0 || pendingRequests > availableUnits) {
+        status = 'critical';
+        color = '#ef4444'; // red
+      } else if (availableUnits < 20 || pendingRequests >= availableUnits / 2) {
+        status = 'moderate';
+        color = '#eab308'; // yellow
+      }
+
+      mapData.push({
+        _id: hospital._id,
+        name: hospital.name,
+        address: `${hospital.address?.street || ''}, ${hospital.address?.city || ''}`,
+        coordinates: hospital.location?.coordinates || null,
+        availableUnits,
+        pendingRequests,
+        status,
+        color
+      });
+    }
+
+    res.json({
+      success: true,
+      data: mapData
     });
   } catch (error) {
     next(error);
