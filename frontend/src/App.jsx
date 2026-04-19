@@ -39,6 +39,7 @@ import { EmergencyBroadcastAdmin } from './pages/EmergencyBroadcastAdmin';
 import { DonorDashboard } from './pages/DonorDashboard';
 import { HospitalQRScanner } from './pages/HospitalQRScanner';
 import { LiveMap } from './pages/LiveMap';
+import { DonorMap } from './pages/DonorMap';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -89,6 +90,7 @@ function AppRoutes() {
       <Route path="/user/appointments" element={<PublicPrivateRoute><PublicAppointments /></PublicPrivateRoute>} />
       <Route path="/user/camps" element={<PublicPrivateRoute><PublicCamps /></PublicPrivateRoute>} />
       <Route path="/user/donor-dashboard" element={<PublicPrivateRoute><DonorDashboard /></PublicPrivateRoute>} />
+      <Route path="/user/donor-map" element={<PublicPrivateRoute><DonorMap /></PublicPrivateRoute>} />
       <Route
         path="/app"
         element={

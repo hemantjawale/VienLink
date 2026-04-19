@@ -4,6 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card'
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
+import { MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
@@ -71,13 +73,21 @@ export const PublicRequestBlood = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 flex justify-center">
       <div className="w-full max-w-4xl space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Request Blood</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Request Blood</h1>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
               Create and track your blood requests to nearby hospitals.
             </p>
           </div>
-          <Button onClick={() => setShowForm(true)}>New Request</Button>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/user/donor-map">
+              <Button variant="outline">
+                <MapPin size={16} className="mr-1.5" />
+                Find Donors on Map
+              </Button>
+            </Link>
+            <Button onClick={() => setShowForm(true)}>New Request</Button>
+          </div>
         </div>
 
         {showForm && (

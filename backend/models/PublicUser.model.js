@@ -58,6 +58,10 @@ const publicUserSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    shareLocationForEmergency: {
+      type: Boolean,
+      default: false,
+    },
     location: {
       type: {
         type: String,

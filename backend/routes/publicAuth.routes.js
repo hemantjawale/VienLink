@@ -173,7 +173,7 @@ router.get('/me', protectPublic, async (req, res, next) => {
 // Update profile
 router.put('/profile', protectPublic, async (req, res, next) => {
   try {
-    const updatable = ['firstName', 'lastName', 'phone', 'city', 'pinCode', 'hasUnderlyingDisease', 'diseaseDetails', 'onMedication', 'medicationDetails', 'bloodGroup', 'location'];
+    const updatable = ['firstName', 'lastName', 'phone', 'city', 'pinCode', 'hasUnderlyingDisease', 'diseaseDetails', 'onMedication', 'medicationDetails', 'bloodGroup', 'location', 'shareLocationForEmergency'];
 
     updatable.forEach((field) => {
       if (req.body[field] !== undefined) {
@@ -227,6 +227,46 @@ router.post('/logout', protectPublic, async (req, res, next) => {
 
     // For now, just return success - client handles token removal
     res.json({ success: true, message: 'Logged out successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get nearby donors who opted-in for emergency location sharing
+// @route   GET /api/user-auth/nearby-donors
+// @access  Private (public users)
+router.get('/nearby-donors', protectPublic, async (req, res, next) => {
+  try {
+    const { bloodGroup } = req.query;
+
+    const filter = {
+      shareLocationForEmergency: true,
+      isActive: true,
+      'location.coordinates': { $exists: true, $ne: null },
+    };
+
+    if (bloodGroup) {
+      filter.bloodGroup = bloodGroup;
+    }
+
+    // Exclude the requesting user themselves
+    filter._id = { $ne: req.publicUser._id };
+
+    const donors = await PublicUser.find(filter)
+      .select('firstName lastName bloodGroup location city phone')
+      .lean();
+
+    res.json({
+      success: true,
+      data: donors.map((d) => ({
+        _id: d._id,
+        name: `${d.firstName} ${d.lastName}`,
+        bloodGroup: d.bloodGroup,
+        city: d.city,
+        phone: d.phone,
+        coordinates: d.location?.coordinates || null,
+      })),
+    });
   } catch (error) {
     next(error);
   }
