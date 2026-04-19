@@ -75,7 +75,7 @@ export const UserLogin = () => {
   const handleRequestResetCode = async (e) => {
     e.preventDefault();
     try {
-      const response = await publicApi.post('/public-auth/forgot-password', { email: resetEmail || form.email });
+      const response = await publicApi.post('/user-auth/forgot-password', { email: resetEmail || form.email });
       
       if (response.data.verificationCode) {
         toast.success(`Verification code: ${response.data.verificationCode}`);
@@ -92,7 +92,7 @@ export const UserLogin = () => {
   const handleResetPassword = async (e) => {
     e.preventDefault();
     try {
-      await publicApi.post('/public-auth/reset-password', {
+      await publicApi.post('/user-auth/reset-password', {
         email: resetEmail || form.email,
         code: resetCode,
         newPassword,

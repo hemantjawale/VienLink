@@ -18,7 +18,7 @@ export const UserProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await publicApi.get('/public-auth/me');
+        const res = await publicApi.get('/user-auth/me');
         setProfile(res.data.user);
       } catch (error) {
         toast.error('Failed to load profile');
@@ -44,7 +44,7 @@ export const UserProfile = () => {
         city: profile.city,
         pinCode: profile.pinCode,
       };
-      const res = await publicApi.put('/public-auth/profile', body);
+      const res = await publicApi.put('/user-auth/profile', body);
       setProfile(res.data.user || profile);
       localStorage.setItem('publicUser', JSON.stringify(res.data.user || profile));
       toast.success('Profile updated');
@@ -63,7 +63,7 @@ export const UserProfile = () => {
     }
     setPwSaving(true);
     try {
-      await publicApi.put('/public-auth/change-password', {
+      await publicApi.put('/user-auth/change-password', {
         currentPassword: passwords.currentPassword,
         newPassword: passwords.newPassword,
       });

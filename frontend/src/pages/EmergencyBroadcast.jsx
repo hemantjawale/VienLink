@@ -106,7 +106,7 @@ export const EmergencyBroadcast = () => {
                 if (!isAuto) toast.success('Location detected successfully');
 
                 // Save to DB
-                publicApi.put('/public-auth/profile', {
+                publicApi.put('/user-auth/profile', {
                     location: {
                         type: 'Point',
                         coordinates: [lng, lat]

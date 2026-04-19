@@ -20,7 +20,8 @@ const app = express();
 // -------------------- Middleware --------------------
 // Handle preflight requests
 app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  res.header('Access-Control-Allow-Origin', origin);
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -29,7 +30,8 @@ app.options('*', (req, res) => {
 
 // Add CORS headers to all responses
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin || '*';
+  res.header('Access-Control-Allow-Origin', origin);
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -44,7 +46,9 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: "*",
+  origin: function (origin, callback) {
+    callback(null, origin || "*");
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -106,7 +110,7 @@ import { startDonorReminderCron } from './utils/donorReminder.js';
 
 // API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/public-auth', publicAuthRoutes);
+app.use('/api/user-auth', publicAuthRoutes);
 app.use('/api/donors', donorRoutes);
 app.use('/api/blood-units', bloodUnitRoutes);
 app.use('/api/blood-requests', bloodRequestRoutes);

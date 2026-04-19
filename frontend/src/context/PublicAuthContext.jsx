@@ -16,7 +16,7 @@ export const PublicAuthProvider = ({ children }) => {
   }, []);
 
   const signup = async (data) => {
-    const res = await publicApi.post('/public-auth/signup', data);
+    const res = await publicApi.post('/user-auth/signup', data);
     const { token, user } = res.data;
     localStorage.setItem('publicToken', token);
     localStorage.setItem('publicUser', JSON.stringify(user));
@@ -25,7 +25,7 @@ export const PublicAuthProvider = ({ children }) => {
   };
 
   const login = async (data) => {
-    const res = await publicApi.post('/public-auth/login', data);
+    const res = await publicApi.post('/user-auth/login', data);
     const { token, user } = res.data;
     localStorage.setItem('publicToken', token);
     localStorage.setItem('publicUser', JSON.stringify(user));
@@ -36,7 +36,7 @@ export const PublicAuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       // Call backend logout endpoint
-      await publicApi.post('/public-auth/logout');
+      await publicApi.post('/user-auth/logout');
     } catch (error) {
       // Even if backend logout fails, continue with client logout
       console.error('Backend logout failed:', error);

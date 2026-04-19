@@ -28,7 +28,7 @@ export const UserDashboard = () => {
   useEffect(() => {
     const fetchMe = async () => {
       try {
-        const res = await publicApi.get('/public-auth/me');
+        const res = await publicApi.get('/user-auth/me');
         setProfile(res.data.user);
       } catch {
         // ignore for now
