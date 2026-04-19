@@ -239,6 +239,12 @@ export const UserDashboard = () => {
                   Live Blood Demand Map
                 </Button>
               </Link>
+              <Link to="/user/donor-map">
+                <Button className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-lg" variant="primary">
+                  <Droplet className="w-4 h-4" />
+                  Find Nearby Donors
+                </Button>
+              </Link>
               <Link to="/user/donor-dashboard">
                 <Button className="w-full bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white" variant="primary">
                   <Heart className="w-4 h-4" />
