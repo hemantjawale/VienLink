@@ -164,76 +164,119 @@ export const DonorMap = () => {
         </div>
       </div>
 
-      {/* Map */}
-      <div className="flex-1 w-full h-full relative z-0">
-        {isLoaded ? (
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={mapCenter}
-            zoom={12}
-            options={mapOptions}
-            onClick={() => setSelectedDonor(null)}
-          >
-            {/* User's own location marker */}
-            {userLocation && <Marker position={userLocation} icon={userMarkerIcon} title="Your location" />}
-
-            {/* Donor markers */}
-            {donors.map((donor) => {
-              if (!donor.coordinates || donor.coordinates.length < 2) return null;
-              const lat = donor.coordinates[1];
-              const lng = donor.coordinates[0];
-              return (
-                <Marker
-                  key={donor._id}
-                  position={{ lat, lng }}
-                  icon={getDonorMarkerIcon(donor.bloodGroup)}
-                  onClick={() => setSelectedDonor({ ...donor, lat, lng })}
-                />
-              );
-            })}
-
-            {/* InfoWindow for selected donor */}
-            {selectedDonor && (
-              <InfoWindow
-                position={{ lat: selectedDonor.lat, lng: selectedDonor.lng }}
-                onCloseClick={() => setSelectedDonor(null)}
+      {/* Map and Details Sidebar */}
+      <div className="flex-1 w-full h-full relative z-0 flex flex-col md:flex-row overflow-hidden">
+        {/* Donor Details Sidebar (Mobile: Bottom, Desktop: Left/Right) */}
+        {selectedDonor && (
+          <div className="w-full md:w-80 bg-gray-900 border-t md:border-t-0 md:border-r border-gray-800 p-6 flex flex-col gap-6 overflow-y-auto animate-in slide-in-from-bottom md:slide-in-from-left duration-300">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <User className="text-red-500" />
+                Donor Profile
+              </h2>
+              <button 
+                onClick={() => setSelectedDonor(null)}
+                className="text-gray-400 hover:text-white transition-colors"
               >
-                <div className="p-3 max-w-xs text-gray-900 font-sans space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow"
-                      style={{ backgroundColor: bloodGroupColors[selectedDonor.bloodGroup] || '#ef4444' }}
-                    >
-                      {selectedDonor.bloodGroup}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-base">{selectedDonor.name}</h3>
-                      {selectedDonor.city && (
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
-                          <MapPin size={10} /> {selectedDonor.city}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                ✕
+              </button>
+            </div>
 
-                  {selectedDonor.phone && (
-                    <a
-                      href={`tel:${selectedDonor.phone}`}
-                      className="flex items-center gap-2 w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-2 px-3 text-sm font-semibold transition-colors"
-                    >
-                      <Phone size={14} />
-                      Call {selectedDonor.phone}
-                    </a>
-                  )}
-                </div>
-              </InfoWindow>
+            <div className="flex flex-col items-center gap-4 py-4 border-b border-gray-800">
+              <div 
+                className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-2xl border-4 border-gray-800"
+                style={{ backgroundColor: bloodGroupColors[selectedDonor.bloodGroup] || '#ef4444' }}
+              >
+                {selectedDonor.bloodGroup}
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-white">{selectedDonor.name}</h3>
+                <p className="text-sm text-gray-400 flex items-center justify-center gap-1">
+                  <MapPin size={14} /> {selectedDonor.city || 'Unknown Location'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 uppercase tracking-widest font-bold text-[10px]">Blood Type</span>
+                <span className="text-white font-bold">{selectedDonor.bloodGroup}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 uppercase tracking-widest font-bold text-[10px]">Status</span>
+                <span className="text-green-500 font-bold flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                  Active Donor
+                </span>
+              </div>
+            </div>
+
+            {selectedDonor.phone && (
+              <div className="mt-auto pt-4">
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">Emergency Contact</p>
+                <a
+                  href={`tel:${selectedDonor.phone}`}
+                  className="flex items-center justify-center gap-3 w-full bg-green-600 hover:bg-green-700 text-white rounded-xl py-4 text-base font-bold shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Phone size={20} />
+                  Call {selectedDonor.phone}
+                </a>
+                <p className="text-[10px] text-gray-500 text-center mt-3">
+                  Please only call in case of real blood emergencies.
+                </p>
+              </div>
             )}
-          </GoogleMap>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-900">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
           </div>
         )}
+
+        <div className="flex-1 h-full relative">
+          {isLoaded ? (
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={mapCenter}
+              zoom={12}
+              options={mapOptions}
+              onClick={() => setSelectedDonor(null)}
+            >
+              {/* User's own location marker */}
+              {userLocation && <Marker position={userLocation} icon={userMarkerIcon} title="Your location" />}
+
+              {/* Donor markers */}
+              {donors.map((donor) => {
+                if (!donor.coordinates || donor.coordinates.length < 2) return null;
+                const lat = donor.coordinates[1];
+                const lng = donor.coordinates[0];
+                const isSelected = selectedDonor?._id === donor._id;
+                return (
+                  <Marker
+                    key={donor._id}
+                    position={{ lat, lng }}
+                    icon={getDonorMarkerIcon(donor.bloodGroup)}
+                    onClick={() => setSelectedDonor({ ...donor, lat, lng })}
+                    zIndex={isSelected ? 1000 : 1}
+                  />
+                );
+              })}
+
+              {/* InfoWindow for selected donor (kept as fallback) */}
+              {selectedDonor && (
+                <InfoWindow
+                  position={{ lat: selectedDonor.lat, lng: selectedDonor.lng }}
+                  onCloseClick={() => setSelectedDonor(null)}
+                >
+                  <div className="p-2 text-gray-900 font-sans">
+                    <p className="font-bold text-sm">{selectedDonor.name}</p>
+                    <p className="text-xs">{selectedDonor.bloodGroup} | {selectedDonor.city}</p>
+                  </div>
+                </InfoWindow>
+              )}
+            </GoogleMap>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-900">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Mobile legend */}
